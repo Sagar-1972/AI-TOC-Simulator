@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-TOC Simulator</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+
+        header {
+            background: linear-gradient(135deg, #111827, #1e3a8a);
+            padding: 28px 20px;
+            text-align: center;
+            border-bottom: 1px solid #334155;
+        }
+
+        header h1 {
+            margin: 0 0 8px;
+            font-size: 32px;
+        }
+
+        header p {
+            margin: 0;
+            color: #cbd5e1;
+        }
+
+        .container {
+            width: min(1200px, 94%);
+            margin: 25px auto 50px;
+        }
+
+        .status {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            background: #172554;
+            border: 1px solid #1d4ed8;
+            color: #bfdbfe;
+            text-align: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .card {
+            background: #111827;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: #93c5fd;
+        }
+
+        .card h3 {
+            margin-bottom: 8px;
+            color: #cbd5e1;
+        }
+
+        label {
+            display: block;
+            margin: 14px 0 7px;
+            font-weight: bold;
+            color: #cbd5e1;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            border: 1px solid #475569;
+            border-radius: 9px;
+            padding: 11px 12px;
+            background: #0f172a;
+            color: #f8fafc;
+            outline: none;
+            font-size: 14px;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #60a5fa;
+        }
+
+        textarea {
+            min-height: 145px;
+            resize: vertical;
+            font-family: Consolas, monospace;
+        }
+
+        .help {
+            margin: 7px 0 0;
+            color: #94a3b8;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 18px;
+            border: none;
+            border-radius: 10px;
+            padding: 13px 16px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            background: #2563eb;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .nfa-button {
+            background: #7c3aed;
+        }
+
+        .nfa-button:hover {
+            background: #6d28d9;
+        }
+
+        .result {
+            margin-top: 20px;
+            border-radius: 12px;
+            padding: 16px;
+            display: none;
+        }
+
+        .accepted {
+            background: #052e16;
+            border: 1px solid #22c55e;
+        }
+
+        .rejected {
+            background: #450a0a;
+            border: 1px solid #ef4444;
+        }
+
+        .error {
+            background: #451a03;
+            border: 1px solid #f97316;
+        }
+
+        .result-title {
+            font-size: 21px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .result p {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+
+        .path {
+            background: #020617;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+            overflow-x: auto;
+            font-family: Consolas, monospace;
+            white-space: nowrap;
+        }
+
+        .diagram-card {
+            grid-column: 1 / -1;
+        }
+
+        .diagram {
+            width: 100%;
+            min-height: 430px;
+            background: #020617;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            overflow: auto;
+            padding: 10px;
+        }
+
+        svg {
+            display: block;
+            width: 100%;
+            min-width: 760px;
+            height: 400px;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 12px;
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            display: inline-block;
+            border-radius: 50%;
+            border: 2px solid #94a3b8;
+        }
+
+        .dot.final {
+            border-color: #22c55e;
+        }
+
+        .dot.start {
+            background: #60a5fa;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #64748b;
+            border-top: 1px solid #1e293b;
+        }
+
+        @media (max-width: 850px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .diagram-card,
+            .full {
+                grid-column: auto;
+            }
+
+            header h1 {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>🤖 AI-TOC Simulator</h1>
+    <p>Theory of Computation — DFA & NFA Simulator</p>
+</header>
+
+<div class="container">
+
+    <div class="status">
+        🟢 Backend: <strong>http://127.0.0.1:8000</strong>
+    </div>
+
+    <div class="grid">
+
+        <!-- ========================= -->
+        <!-- DFA SIMULATOR -->
+        <!-- ========================= -->
+
+        <section class="card">
+            <h2>🔵 DFA Simulator</h2>
+
+            <label for="dfaStates">States</label>
+            <input
+                id="dfaStates"
+                type="text"
+                value="q0,q1"
+                placeholder="Example: q0,q1,q2"
+            >
+
+            <label for="dfaAlphabet">Alphabet</label>
+            <input
+                id="dfaAlphabet"
+                type="text"
+                value="0,1"
+                placeholder="Example: 0,1"
+            >
+
+            <label for="dfaStart">Start State</label>
+            <input
+                id="dfaStart"
+                type="text"
+                value="q0"
+                placeholder="Example: q0"
+            >
+
+            <label for="dfaFinal">Final States</label>
+            <input
+                id="dfaFinal"
+                type="text"
+                value="q0"
+                placeholder="Example: q0,q2"
+            >
+
+            <label for="dfaTransitions">Transitions</label>
+            <textarea id="dfaTransitions">q0,0,q0
+q0,1,q1
+q1,0,q1
+q1,1,q0</textarea>
+
+            <p class="help">
+                One transition per line:
+                <strong>state,symbol,destination</strong>
+            </p>
+
+            <label for="dfaInput">Input String</label>
+            <input
+                id="dfaInput"
+                type="text"
+                value="1011"
+                placeholder="Example: 1011"
+            >
+
+            <button onclick="simulateDFA()">
+                ▶ Simulate DFA
+            </button>
+
+            <div id="dfaResult" class="result"></div>
+        </section>
+
+
+        <!-- ========================= -->
+        <!-- NFA SIMULATOR -->
+        <!-- ========================= -->
+
+        <section class="card">
+            <h2>🟣 NFA Simulator</h2>
+
+            <label for="nfaStates">States</label>
+            <input
+                id="nfaStates"
+                type="text"
+                value="q0,q1,q2"
+                placeholder="Example: q0,q1,q2"
+            >
+
+            <label for="nfaAlphabet">Alphabet</label>
+            <input
+                id="nfaAlphabet"
+                type="text"
+                value="0,1"
+                placeholder="Example: 0,1"
+            >
+
+            <label for="nfaStart">Start State</label>
+            <input
+                id="nfaStart"
+                type="text"
+                value="q0"
+                placeholder="Example: q0"
+            >
+
+            <label for="nfaFinal">Final States</label>
+            <input
+                id="nfaFinal"
+                type="text"
+                value="q2"
+                placeholder="Example: q2"
+            >
+
+            <label for="nfaTransitions">NFA Transitions</label>
+            <textarea id="nfaTransitions">q0,0,q0
+q0,1,q0|q1
+q1,0,q2
+q1,1,
+q2,0,q2
+q2,1,q2</textarea>
+
+            <p class="help">
+                One transition per line:
+                <strong>state,symbol,destination1|destination2</strong>
+                <br>
+                Example: <strong>q0,1,q0|q1</strong> means two possible destinations.
+            </p>
+
+            <label for="nfaInput">Input String</label>
+            <input
+                id="nfaInput"
+                type="text"
+                value="110"
+                placeholder="Example: 110"
+            >
+
+            <button class="nfa-button" onclick="simulateNFA()">
+                ▶ Simulate NFA
+            </button>
+
+            <div id="nfaResult" class="result"></div>
+        </section>
+
+
+        <!-- ========================= -->
+        <!-- DFA DIAGRAM -->
+        <!-- ========================= -->
+
+        <section class="card diagram-card">
+            <h2>🔵 DFA State Diagram</h2>
+
+            <div id="dfaDiagram" class="diagram">
+                <p style="text-align:center;color:#64748b;">
+                    Run the DFA simulator to generate the diagram.
+                </p>
+            </div>
+
+            <div class="legend">
+                <span>
+                    <i class="dot start"></i>
+                    Start state
+                </span>
+
+                <span>
+                    <i class="dot final"></i>
+                    Final state
+                </span>
+
+                <span>
+                    ○ Normal state
+                </span>
+            </div>
+        </section>
+
+
+        <!-- ========================= -->
+        <!-- NFA DIAGRAM -->
+        <!-- ========================= -->
+
+        <section class="card diagram-card">
+            <h2>🟣 NFA State Diagram</h2>
+
+            <div id="nfaDiagram" class="diagram">
+                <p style="text-align:center;color:#64748b;">
+                    Run the NFA simulator to generate the diagram.
+                </p>
+            </div>
+
+            <div class="legend">
+                <span>
+                    <i class="dot start"></i>
+                    Start state
+                </span>
+
+                <span>
+                    <i class="dot final"></i>
+                    Final state
+                </span>
+
+                <span>
+                    ○ Normal state
+                </span>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<footer>
+    AI-TOC Simulator • DFA & NFA Learning Platform
+</footer>
+
+
+<script>
+
+    const BACKEND_URL = "http://127.0.0.1:8000";
+
+
+    // =========================================================
+    // GENERAL HELPERS
+    // =========================================================
+
+    function parseList(value) {
+        return value
+            .split(",")
+            .map(item => item.trim())
+            .filter(item => item.length > 0);
+    }
+
+
+    function escapeHTML(value) {
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    function showError(elementId, message) {
+        const element = document.getElementById(elementId);
+
+        element.style.display = "block";
+        element.className = "result error";
+
+        element.innerHTML = `
+            <div class="result-title">⚠️ Error</div>
+            <p>${escapeHTML(message)}</p>
+        `;
+    }
+
+
+    // =========================================================
+    // DFA
+    // =========================================================
+
+    async function simulateDFA() {
+
+        const resultBox = document.getElementById("dfaResult");
+
+        try {
+
+            const states = parseList(
+                document.getElementById("dfaStates").value
+            );
+
+            const alphabet = parseList(
+                document.getElementById("dfaAlphabet").value
+            );
+
+            const startState =
+                document.getElementById("dfaStart").value.trim();
+
+            const finalStates = parseList(
+                document.getElementById("dfaFinal").value
+            );
+
+            const input =
+                document.getElementById("dfaInput").value.trim();
+
+            const transitionText =
+                document.getElementById("dfaTransitions").value.trim();
+
+            if (states.length === 0) {
+                throw new Error("Please enter at least one DFA state.");
+            }
+
+            if (alphabet.length === 0) {
+                throw new Error("Please enter at least one alphabet symbol.");
+            }
+
+            if (!startState) {
+                throw new Error("Please enter the DFA start state.");
+            }
+
+            if (finalStates.length === 0) {
+                throw new Error("Please enter at least one final state.");
+            }
+
+            const transitions = {};
+
+            states.forEach(state => {
+                transitions[state] = {};
+            });
+
+            const lines = transitionText
+                .split("\n")
+                .map(line => line.trim())
+                .filter(line => line.length > 0);
+
+            for (const line of lines) {
+
+                const parts = line.split(",").map(part => part.trim());
+
+                if (parts.length !== 3) {
+                    throw new Error(
+                        `Invalid DFA transition: "${line}". Use state,symbol,destination.`
+                    );
+                }
+
+                const [state, symbol, destination] = parts;
+
+                if (!transitions[state]) {
+                    transitions[state] = {};
+                }
+
+                transitions[state][symbol] = destination;
+            }
+
+            // Validate locally before sending
+            states.forEach(state => {
+
+                if (!transitions[state]) {
+                    throw new Error(
+                        `Missing transitions for state ${state}.`
+                    );
+                }
+
+                alphabet.forEach(symbol => {
+
+                    if (!(symbol in transitions[state])) {
+                        throw new Error(
+                            `Missing transition δ(${state}, ${symbol}).`
+                        );
+                    }
+                });
+            });
+
+            const data = {
+                states,
+                alphabet,
+                transitions,
+                start_state: startState,
+                final_states: finalStates,
+                input
+            };
+
+            resultBox.style.display = "block";
+            resultBox.className = "result";
+            resultBox.innerHTML = "⏳ Simulating DFA...";
+
+            const response = await fetch(
+                `${BACKEND_URL}/dfa/simulate`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                }
+            );
+
+            const responseData = await response.json();
+
+            if (!response.ok) {
+
+                throw new Error(
+                    responseData.detail
+                        ? JSON.stringify(responseData.detail)
+                        : "DFA simulation failed."
+                );
+            }
+
+            displayDFAResult(responseData);
+
+            drawDFA(
+                states,
+                transitions,
+                startState,
+                finalStates
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            showError(
+                "dfaResult",
+                error.message
+            );
+        }
+    }
+
+
+    function displayDFAResult(data) {
+
+        const resultBox =
+            document.getElementById("dfaResult");
+
+        resultBox.style.display = "block";
+
+        if (data.accepted) {
+
+            resultBox.className = "result accepted";
+
+            resultBox.innerHTML = `
+                <div class="result-title">
+                    ✅ ACCEPTED
+                </div>
+
+                <p>
+                    <strong>Input:</strong>
+                    ${escapeHTML(data.input)}
+                </p>
+
+                <p>
+                    <strong>Final State:</strong>
+                    ${escapeHTML(data.final_state)}
+                </p>
+
+                <p><strong>Execution Path:</strong></p>
+
+                <div class="path">
+                    ${data.path
+                        .map(state => escapeHTML(state))
+                        .join(" → ")}
+                </div>
+            `;
+
+        } else {
+
+            resultBox.className = "result rejected";
+
+            resultBox.innerHTML = `
+                <div class="result-title">
+                    ❌ REJECTED
+                </div>
+
+                <p>
+                    <strong>Input:</strong>
+                    ${escapeHTML(data.input || "")}
+                </p>
+
+                ${
+                    data.reason
+                        ? `<p><strong>Reason:</strong> ${escapeHTML(data.reason)}</p>`
+                        : ""
+                }
+
+                ${
+                    data.final_state
+                        ? `<p><strong>Final State:</strong> ${escapeHTML(data.final_state)}</p>`
+                        : ""
+                }
+
+                <p><strong>Execution Path:</strong></p>
+
+                <div class="path">
+                    ${data.path
+                        .map(state => escapeHTML(state))
+                        .join(" → ")}
+                </div>
+            `;
+        }
+    }
+
+
+    // =========================================================
+    // NFA
+    // =========================================================
+
+    async function simulateNFA() {
+
+        const resultBox =
+            document.getElementById("nfaResult");
+
+        try {
+
+            const states = parseList(
+                document.getElementById("nfaStates").value
+            );
+
+            const alphabet = parseList(
+                document.getElementById("nfaAlphabet").value
+            );
+
+            const startState =
+                document.getElementById("nfaStart").value.trim();
+
+            const finalStates = parseList(
+                document.getElementById("nfaFinal").value
+            );
+
+            const input =
+                document.getElementById("nfaInput").value.trim();
+
+            const transitionText =
+                document.getElementById("nfaTransitions").value.trim();
+
+            if (states.length === 0) {
+                throw new Error("Please enter at least one NFA state.");
+            }
+
+            if (alphabet.length === 0) {
+                throw new Error("Please enter at least one alphabet symbol.");
+            }
+
+            if (!startState) {
+                throw new Error("Please enter the NFA start state.");
+            }
+
+            if (finalStates.length === 0) {
+                throw new Error("Please enter at least one final state.");
+            }
+
+            const transitions = {};
+
+            states.forEach(state => {
+                transitions[state] = {};
+
+                alphabet.forEach(symbol => {
+                    transitions[state][symbol] = [];
+                });
+            });
+
+            const lines = transitionText
+                .split("\n")
+                .map(line => line.trim())
+                .filter(line => line.length > 0);
+
+            for (const line of lines) {
+
+                const parts = line.split(",").map(part => part.trim());
+
+                if (parts.length !== 3) {
+                    throw new Error(
+                        `Invalid NFA transition: "${line}". Use state,symbol,destination1|destination2.`
+                    );
+                }
+
+                const [state, symbol, destinationText] = parts;
+
+                if (!states.includes(state)) {
+                    throw new Error(
+                        `Unknown NFA state: ${state}`
+                    );
+                }
+
+                if (!alphabet.includes(symbol)) {
+                    throw new Error(
+                        `Unknown alphabet symbol: ${symbol}`
+                    );
+                }
+
+                if (destinationText === "") {
+                    transitions[state][symbol] = [];
+                } else {
+
+                    const destinations = destinationText
+                        .split("|")
+                        .map(destination => destination.trim())
+                        .filter(destination => destination.length > 0);
+
+                    for (const destination of destinations) {
+
+                        if (!states.includes(destination)) {
+                            throw new Error(
+                                `Unknown destination state: ${destination}`
+                            );
+                        }
+                    }
+
+                    transitions[state][symbol] = destinations;
+                }
+            }
+
+            const data = {
+                states,
+                alphabet,
+                transitions,
+                start_state: startState,
+                final_states: finalStates,
+                input
+            };
+
+            resultBox.style.display = "block";
+            resultBox.className = "result";
+            resultBox.innerHTML = "⏳ Simulating NFA...";
+
+            const response = await fetch(
+                `${BACKEND_URL}/nfa/simulate`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                }
+            );
+
+            const responseData = await response.json();
+
+            if (!response.ok) {
+
+                throw new Error(
+                    responseData.detail
+                        ? JSON.stringify(responseData.detail)
+                        : "NFA simulation failed."
+                );
+            }
+
+            displayNFAResult(responseData);
+
+            drawNFA(
+                states,
+                transitions,
+                startState,
+                finalStates
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            showError(
+                "nfaResult",
+                error.message
+            );
+        }
+    }
+
+
+    function displayNFAResult(data) {
+
+        const resultBox =
+            document.getElementById("nfaResult");
+
+        resultBox.style.display = "block";
+
+        const pathHTML = data.path
+            .map((states, index) => {
+
+                const stateText =
+                    states.length > 0
+                        ? states.map(state => escapeHTML(state)).join(", ")
+                        : "∅";
+
+                return `
+                    <div>
+                        Step ${index}: { ${stateText} }
+                    </div>
+                `;
+
+            })
+            .join("");
+
+        if (data.accepted) {
+
+            resultBox.className = "result accepted";
+
+            resultBox.innerHTML = `
+                <div class="result-title">
+                    ✅ ACCEPTED
+                </div>
+
+                <p>
+                    <strong>Input:</strong>
+                    ${escapeHTML(data.input)}
+                </p>
+
+                <p>
+                    <strong>Reachable Final States:</strong>
+                    ${
+                        data.final_states.length > 0
+                            ? data.final_states
+                                .map(state => escapeHTML(state))
+                                .join(", ")
+                            : "None"
+                    }
+                </p>
+
+                <p><strong>Possible States at Each Step:</strong></p>
+
+                <div class="path">
+                    ${pathHTML}
+                </div>
+            `;
+
+        } else {
+
+            resultBox.className = "result rejected";
+
+            resultBox.innerHTML = `
+                <div class="result-title">
+                    ❌ REJECTED
+                </div>
+
+                <p>
+                    <strong>Input:</strong>
+                    ${escapeHTML(data.input || "")}
+                </p>
+
+                ${
+                    data.reason
+                        ? `<p><strong>Reason:</strong> ${escapeHTML(data.reason)}</p>`
+                        : ""
+                }
+
+                <p>
+                    <strong>Final Reachable States:</strong>
+                    ${
+                        data.final_states
+                            ? (
+                                data.final_states.length > 0
+                                    ? data.final_states
+                                        .map(state => escapeHTML(state))
+                                        .join(", ")
+                                    : "∅"
+                            )
+                            : "N/A"
+                    }
+                </p>
+
+                <p><strong>Possible States at Each Step:</strong></p>
+
+                <div class="path">
+                    ${pathHTML}
+                </div>
+            `;
+        }
+    }
+
+
+    // =========================================================
+    // SVG HELPERS
+    // =========================================================
+
+    function createSVGElement(tag, attributes = {}) {
+
+        const element =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                tag
+            );
+
+        Object.entries(attributes).forEach(
+            ([key, value]) => {
+                element.setAttribute(key, value);
+            }
+        );
+
+        return element;
+    }
+
+
+    function addText(svg, text, x, y, attributes = {}) {
+
+        const element =
+            createSVGElement("text", {
+                x,
+                y,
+                ...attributes
+            });
+
+        element.textContent = text;
+
+        svg.appendChild(element);
+
+        return element;
+    }
+
+
+    function setupSVGMarker(svg, id) {
+
+        const defs =
+            createSVGElement("defs");
+
+        const marker =
+            createSVGElement("marker", {
+                id,
+                markerWidth: "10",
+                markerHeight: "10",
+                refX: "9",
+                refY: "3",
+                orient: "auto",
+                markerUnits: "strokeWidth"
+            });
+
+        const path =
+            createSVGElement("path", {
+                d: "M0,0 L0,6 L9,3 z",
+                fill: "#94a3b8"
+            });
+
+        marker.appendChild(path);
+        defs.appendChild(marker);
+        svg.appendChild(defs);
+    }
+
+
+    // =========================================================
+    // DFA DIAGRAM
+    // =========================================================
+
+    function drawDFA(
+        states,
+        transitions,
+        startState,
+        finalStates
+    ) {
+
+        const container =
+            document.getElementById("dfaDiagram");
+
+        container.innerHTML = "";
+
+        const svg =
+            createSVGElement("svg", {
+                viewBox: "0 0 1000 400",
+                role: "img"
+            });
+
+        setupSVGMarker(svg, "dfaArrow");
+
+        const positions =
+            calculatePositions(states, 1000, 400);
+
+        // Draw transitions first
+        states.forEach(state => {
+
+            const stateTransitions =
+                transitions[state] || {};
+
+            Object.entries(stateTransitions)
+                .forEach(([symbol, destination]) => {
+
+                    if (!positions[state] || !positions[destination]) {
+                        return;
+                    }
+
+                    drawDFAEdge(
+                        svg,
+                        positions[state],
+                        positions[destination],
+                        symbol,
+                        state === destination
+                    );
+                });
+        });
+
+        // Draw start arrow
+        if (positions[startState]) {
+
+            const p = positions[startState];
+
+            const line =
+                createSVGElement("line", {
+                    x1: p.x - 75,
+                    y1: p.y,
+                    x2: p.x - 42,
+                    y2: p.y,
+                    stroke: "#60a5fa",
+                    "stroke-width": "2.5",
+                    "marker-end": "url(#dfaArrow)"
+                });
+
+            svg.appendChild(line);
+
+            addText(
+                svg,
+                "start",
+                p.x - 74,
+                p.y - 10,
+                {
+                    fill: "#60a5fa",
+                    "font-size": "13",
+                    "text-anchor": "middle"
+                }
+            );
+        }
+
+        // Draw states
+        states.forEach(state => {
+
+            const p = positions[state];
+
+            if (!p) {
+                return;
+            }
+
+            const isFinal =
+                finalStates.includes(state);
+
+            const circle =
+                createSVGElement("circle", {
+                    cx: p.x,
+                    cy: p.y,
+                    r: "38",
+                    fill: "#0f172a",
+                    stroke: isFinal ? "#22c55e" : "#60a5fa",
+                    "stroke-width": "3"
+                });
+
+            svg.appendChild(circle);
+
+            if (isFinal) {
+
+                const inner =
+                    createSVGElement("circle", {
+                        cx: p.x,
+                        cy: p.y,
+                        r: "31",
+                        fill: "none",
+                        stroke: "#22c55e",
+                        "stroke-width": "2"
+                    });
+
+                svg.appendChild(inner);
+            }
+
+            addText(
+                svg,
+                state,
+                p.x,
+                p.y + 6,
+                {
+                    fill: "#f8fafc",
+                    "font-size": "16",
+                    "font-weight": "bold",
+                    "text-anchor": "middle"
+                }
+            );
+        });
+
+        container.appendChild(svg);
+    }
+
+
+    function drawDFAEdge(
+        svg,
+        from,
+        to,
+        symbol,
+        selfLoop
+    ) {
+
+        if (selfLoop) {
+
+            const path =
+                createSVGElement("path", {
+                    d: `
+                        M ${from.x - 25} ${from.y - 30}
+                        C ${from.x - 85} ${from.y - 105},
+                          ${from.x + 85} ${from.y - 105},
+                          ${from.x + 25} ${from.y - 30}
+                    `,
+                    fill: "none",
+                    stroke: "#94a3b8",
+                    "stroke-width": "2",
+                    "marker-end": "url(#dfaArrow)"
+                });
+
+            svg.appendChild(path);
+
+            addText(
+                svg,
+                symbol,
+                from.x,
+                from.y - 78,
+                {
+                    fill: "#f8fafc",
+                    "font-size": "14",
+                    "text-anchor": "middle"
+                }
+            );
+
+            return;
+        }
+
+        const angle =
+            Math.atan2(
+                to.y - from.y,
+                to.x - from.x
+            );
+
+        const startX =
+            from.x + Math.cos(angle) * 40;
+
+        const startY =
+            from.y + Math.sin(angle) * 40;
+
+        const endX =
+            to.x - Math.cos(angle) * 40;
+
+        const endY =
+            to.y - Math.sin(angle) * 40;
+
+        const line =
+            createSVGElement("line", {
+                x1: startX,
+                y1: startY,
+                x2: endX,
+                y2: endY,
+                stroke: "#94a3b8",
+                "stroke-width": "2",
+                "marker-end": "url(#dfaArrow)"
+            });
+
+        svg.appendChild(line);
+
+        const midX =
+            (startX + endX) / 2;
+
+        const midY =
+            (startY + endY) / 2 - 8;
+
+        addText(
+            svg,
+            symbol,
+            midX,
+            midY,
+            {
+                fill: "#f8fafc",
+                "font-size": "14",
+                "font-weight": "bold",
+                "text-anchor": "middle"
+            }
+        );
+    }
+
+
+    // =========================================================
+    // NFA DIAGRAM
+    // =========================================================
+
+    function drawNFA(
+        states,
+        transitions,
+        startState,
+        finalStates
+    ) {
+
+        const container =
+            document.getElementById("nfaDiagram");
+
+        container.innerHTML = "";
+
+        const svg =
+            createSVGElement("svg", {
+                viewBox: "0 0 1000 400",
+                role: "img"
+            });
+
+        setupSVGMarker(svg, "nfaArrow");
+
+        const positions =
+            calculatePositions(states, 1000, 400);
+
+        // Draw transitions first
+        states.forEach(state => {
+
+            const stateTransitions =
+                transitions[state] || {};
+
+            Object.entries(stateTransitions)
+                .forEach(([symbol, destinations]) => {
+
+                    if (!destinations || destinations.length === 0) {
+                        return;
+                    }
+
+                    destinations.forEach(destination => {
+
+                        if (!positions[state] || !positions[destination]) {
+                            return;
+                        }
+
+                        drawNFAEdge(
+                            svg,
+                            positions[state],
+                            positions[destination],
+                            symbol,
+                            state === destination
+                        );
+                    });
+                });
+        });
+
+        // Start arrow
+        if (positions[startState]) {
+
+            const p = positions[startState];
+
+            const line =
+                createSVGElement("line", {
+                    x1: p.x - 75,
+                    y1: p.y,
+                    x2: p.x - 42,
+                    y2: p.y,
+                    stroke: "#a78bfa",
+                    "stroke-width": "2.5",
+                    "marker-end": "url(#nfaArrow)"
+                });
+
+            svg.appendChild(line);
+
+            addText(
+                svg,
+                "start",
+                p.x - 74,
+                p.y - 10,
+                {
+                    fill: "#a78bfa",
+                    "font-size": "13",
+                    "text-anchor": "middle"
+                }
+            );
+        }
+
+        // States
+        states.forEach(state => {
+
+            const p = positions[state];
+
+            if (!p) {
+                return;
+            }
+
+            const isFinal =
+                finalStates.includes(state);
+
+            const circle =
+                createSVGElement("circle", {
+                    cx: p.x,
+                    cy: p.y,
+                    r: "38",
+                    fill: "#0f172a",
+                    stroke: isFinal ? "#22c55e" : "#a78bfa",
+                    "stroke-width": "3"
+                });
+
+            svg.appendChild(circle);
+
+            if (isFinal) {
+
+                const inner =
+                    createSVGElement("circle", {
+                        cx: p.x,
+                        cy: p.y,
+                        r: "31",
+                        fill: "none",
+                        stroke: "#22c55e",
+                        "stroke-width": "2"
+                    });
+
+                svg.appendChild(inner);
+            }
+
+            addText(
+                svg,
+                state,
+                p.x,
+                p.y + 6,
+                {
+                    fill: "#f8fafc",
+                    "font-size": "16",
+                    "font-weight": "bold",
+                    "text-anchor": "middle"
+                }
+            );
+        });
+
+        container.appendChild(svg);
+    }
+
+
+    function drawNFAEdge(
+        svg,
+        from,
+        to,
+        symbol,
+        selfLoop
+    ) {
+
+        if (selfLoop) {
+
+            const path =
+                createSVGElement("path", {
+                    d: `
+                        M ${from.x - 25} ${from.y - 30}
+                        C ${from.x - 85} ${from.y - 105},
+                          ${from.x + 85} ${from.y - 105},
+                          ${from.x + 25} ${from.y - 30}
+                    `,
+                    fill: "none",
+                    stroke: "#a78bfa",
+                    "stroke-width": "2",
+                    "marker-end": "url(#nfaArrow)"
+                });
+
+            svg.appendChild(path);
+
+            addText(
+                svg,
+                symbol,
+                from.x,
+                from.y - 78,
+                {
+                    fill: "#f8fafc",
+                    "font-size": "14",
+                    "text-anchor": "middle"
+                }
+            );
+
+            return;
+        }
+
+        const angle =
+            Math.atan2(
+                to.y - from.y,
+                to.x - from.x
+            );
+
+        const startX =
+            from.x + Math.cos(angle) * 40;
+
+        const startY =
+            from.y + Math.sin(angle) * 40;
+
+        const endX =
+            to.x - Math.cos(angle) * 40;
+
+        const endY =
+            to.y - Math.sin(angle) * 40;
+
+        const line =
+            createSVGElement("line", {
+                x1: startX,
+                y1: startY,
+                x2: endX,
+                y2: endY,
+                stroke: "#a78bfa",
+                "stroke-width": "2",
+                "marker-end": "url(#nfaArrow)"
+            });
+
+        svg.appendChild(line);
+
+        const midX =
+            (startX + endX) / 2;
+
+        const midY =
+            (startY + endY) / 2 - 8;
+
+        addText(
+            svg,
+            symbol,
+            midX,
+            midY,
+            {
+                fill: "#f8fafc",
+                "font-size": "14",
+                "font-weight": "bold",
+                "text-anchor": "middle"
+            }
+        );
+    }
+
+
+    // =========================================================
+    // POSITION CALCULATOR
+    // =========================================================
+
+    function calculatePositions(
+        states,
+        width,
+        height
+    ) {
+
+        const positions = {};
+
+        if (states.length === 0) {
+            return positions;
+        }
+
+        const centerX = width / 2;
+        const centerY = height / 2;
+
+        const radius =
+            Math.min(
+                280,
+                100 + states.length * 30
+            );
+
+        states.forEach((state, index) => {
+
+            const angle =
+                -Math.PI / 2 +
+                (2 * Math.PI * index) /
+                states.length;
+
+            positions[state] = {
+                x: centerX + radius * Math.cos(angle),
+                y: centerY + radius * 0.58 * Math.sin(angle)
+            };
+        });
+
+        return positions;
+    }
+
+
+    // =========================================================
+    // INITIAL DEMO DIAGRAMS
+    // =========================================================
+
+    window.addEventListener("load", () => {
+
+        // Draw initial DFA diagram
+        drawDFA(
+            ["q0", "q1"],
+            {
+                q0: {
+                    "0": "q0",
+                    "1": "q1"
+                },
+                q1: {
+                    "0": "q1",
+                    "1": "q0"
+                }
+            },
+            "q0",
+            ["q0"]
+        );
+
+        // Draw initial NFA diagram
+        drawNFA(
+            ["q0", "q1", "q2"],
+            {
+                q0: {
+                    "0": ["q0"],
+                    "1": ["q0", "q1"]
+                },
+                q1: {
+                    "0": ["q2"],
+                    "1": []
+                },
+                q2: {
+                    "0": ["q2"],
+                    "1": ["q2"]
+                }
+            },
+            "q0",
+            ["q2"]
+        );
+    });
+
+</script>
+
+</body>
+</html>
