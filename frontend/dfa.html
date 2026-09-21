@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AI-TOC Simulator - DFA</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f5f8;color:#1f2937}
+.nav{background:#101827;color:#fff;padding:15px 28px;display:flex;justify-content:space-between;align-items:center;gap:15px}
+.logo{font-weight:800;font-size:20px}.links{display:flex;gap:7px;flex-wrap:wrap}.links a{color:#dbeafe;text-decoration:none;padding:9px 13px;border-radius:7px;font-size:14px}.links a:hover,.links .active{background:#2563eb;color:#fff}
+.wrap{width:96%;max-width:1500px;margin:22px auto 50px}.hero{background:linear-gradient(135deg,#111827,#1e3a5f);color:#fff;padding:23px 27px;border-radius:12px;margin-bottom:16px}.hero h1{margin:0 0 6px}.hero p{margin:0;color:#dbeafe}
+.card{background:#fff;border:1px solid #d9e0e8;border-radius:11px;padding:17px;margin-bottom:17px;box-shadow:0 2px 8px #0f172a0d}.card h2{font-size:18px;margin:0 0 13px;color:#1e3a5f}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}.field label{display:block;font-size:13px;font-weight:700;color:#475569;margin-bottom:5px}
+input,textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:7px;font-size:14px}textarea{min-height:115px;font-family:Consolas,monospace;resize:vertical}.help{font-size:12px;color:#64748b;margin-top:5px}
+.btns{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}button{border:0;border-radius:7px;padding:10px 15px;color:#fff;font-weight:700;cursor:pointer}button:hover{filter:brightness(.94)}.blue{background:#2563eb}.green{background:#16a34a}.red{background:#dc2626}.gray{background:#64748b}
+.formal{background:#f8fafc;border:1px solid #dbe3ec;border-radius:7px;padding:13px;font-family:Consolas,monospace;line-height:1.8;overflow:auto}
+.status{display:none;margin-top:12px;padding:12px;border-radius:7px;font-weight:700}.status.ok{display:block;background:#dcfce7;color:#166534}.status.bad{display:block;background:#fee2e2;color:#991b1b}.status.err{display:block;background:#ffedd5;color:#9a3412}
+.table{width:100%;border-collapse:collapse}.table th,.table td{padding:9px;border:1px solid #dbe3ec;text-align:center}.table th{background:#1e4f91;color:#fff}.table td{font-family:Consolas,monospace}
+.two{display:block}
+.graph{border:1px solid #d4dce6;border-radius:9px;padding:11px;background:#fff}.gt{font-weight:800;color:#334155;padding:5px 5px 11px;border-bottom:1px solid #e2e8f0}
+#graph{width:100%;height:500px;border:2px solid #47739d;border-radius:8px;margin-top:10px;background:#fff}
+svg{width:100%;height:100%;display:block}.edge{fill:none;stroke:#64748b;stroke-width:2.2}.edge.active{stroke:#ef2d2d;stroke-width:5}.elabel{font-size:15px;font-weight:800;fill:#334155;text-anchor:middle}.elabel.active{fill:#dc2626}.state{fill:#fff;stroke:#475569;stroke-width:2.5}
+.state.start-state{fill:#f0fdf4;stroke:#16a34a;stroke-width:4}
+.state.final-state{fill:#fff1f2;stroke:#dc2626;stroke-width:4}
+.state.current{stroke:#f59e0b;stroke-width:5}
+.state.accept{fill:#fff1f2;stroke:#dc2626;stroke-width:5}
+.ring{fill:none;stroke:#dc2626;stroke-width:2.5}
+.ring.accept{stroke:#dc2626;stroke-width:4}.slabel{font-size:17px;font-weight:800;fill:#111827;text-anchor:middle;dominant-baseline:middle}.start{stroke:#334155;stroke-width:3}.starttext{font-size:13px;font-weight:700;fill:#334155}
+.tit{text-align:center;margin:13px 0 7px;font-weight:800;color:#334155}.tape{display:flex;justify-content:center;gap:7px;flex-wrap:wrap}.cell{min-width:40px;padding:9px 13px;border:2px solid #94a3b8;border-radius:6px;text-align:center;font:800 14px Consolas;background:#fff}.cell.active{background:#fef08a;border-color:#f59e0b}.cell.done{background:#dcfce7;border-color:#22c55e}
+.result{width:100%;border-collapse:collapse;margin-top:15px;font-size:13px}.result th{background:#1e4f91;color:#fff;padding:9px}.result td{border:1px solid #e2e8f0;padding:9px;text-align:center}.yes{color:#15803d;font-weight:800}.no{color:#b91c1c;font-weight:800}
+.exec{background:#f8fafc;border:1px solid #dbe3ec;border-radius:7px;padding:11px;font:14px Consolas;max-height:250px;overflow:auto}.exrow{padding:7px;border-bottom:1px solid #e2e8f0}
+@media(max-width:1000px){.two,.grid{grid-template-columns:1fr}.nav{flex-direction:column;align-items:flex-start}#graph{height:430px}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="logo">🤖 AI-TOC SIMULATOR</div>
+  <div class="links">
+    <a href="index.html">🏠 Home</a><a class="active" href="dfa.html">🔵 DFA</a>
+    <a href="nfa.html">🟣 NFA</a><a href="enfa.html">🟠 ε-NFA</a>
+  </div>
+</nav>
+
+<main class="wrap">
+<section class="hero"><h1>🔵 Deterministic Finite Automaton (DFA)</h1><p>Define the language, transition function and input string, then simulate the DFA step by step.</p></section>
+
+<section class="card">
+<h2>1. Formal Language</h2>
+<input id="language" value="L = { w ∈ {a,b}* | w ends with 'ab' }">
+</section>
+
+<section class="card">
+<h2>2. DFA Definition</h2>
+<div class="formal"><b>M = (Q, Σ, δ, q₀, F)</b><br>Q = Set of states<br>Σ = Input alphabet<br>δ = Transition function<br>q₀ = Initial state<br>F = Set of final states</div><br>
+<div class="grid">
+<div class="field"><label>States Q</label><input id="states" value="q0,q1,q2"></div>
+<div class="field"><label>Alphabet Σ</label><input id="alphabet" value="a,b"></div>
+<div class="field"><label>Start State q₀</label><input id="start" value="q0"></div>
+<div class="field"><label>Final States F</label><input id="final" value="q2"></div>
+</div><br>
+<div class="field"><label>Transition Function δ</label>
+<textarea id="trans">q0,a,q1
+q0,b,q0
+q1,a,q1
+q1,b,q2
+q2,a,q1
+q2,b,q0</textarea>
+<div class="help">One transition per line: state,symbol,destination</div></div><br>
+<div class="field"><label>Input String w</label><input id="input" value="aab"></div>
+<div class="btns"><button class="blue" onclick="build()">Generate DFA</button><button class="green" onclick="run()">Run Simulation</button><button class="gray" onclick="reset()">Reset</button></div>
+<div id="status" class="status"></div>
+</section>
+
+<section class="card"><h2>3. Transition Function δ</h2><div id="tt"></div></section>
+
+<section class="card">
+<h2>4. DFA Simulation</h2>
+<div class="btns"><button class="green" onclick="step()">Step Transition Arrow</button><button class="red" onclick="reset()">Reset DFA</button></div>
+<div class="two" style="margin-top:15px">
+<div class="graph">
+<div class="gt">STATE TRANSITION GRAPH WITH LABELED ARROWS</div>
+<div id="graph"><svg id="svg" viewBox="0 0 900 500">
+<defs>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#64748b"/></marker>
+<marker id="arrred" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ef2d2d"/></marker>
+</defs><g id="edges"></g><g id="nodes"></g></svg></div>
+<div class="tit">Input String Tape <span id="lang"></span></div><div id="tape" class="tape"></div>
+<table class="result"><thead><tr><th>Current State</th><th>Input Symbol</th><th>Active Arrow Transition</th><th>Accepting State?</th></tr></thead>
+<tbody><tr><td id="rs">q0</td><td id="ri">—</td><td id="rt">Awaiting Step</td><td id="ra" class="no">NO</td></tr></tbody></table>
+</div>
+</div>
+</section>
+
+<section class="card"><h2>5. Execution Steps</h2><div id="exec" class="exec">DFA is ready.</div></section>
+</main>
+
+<script>
+let D=null,S=null,k=0;
+const NS="http://www.w3.org/2000/svg";
+const $=id=>document.getElementById(id);
+const list=x=>x.split(",").map(v=>v.trim()).filter(Boolean);
+const esc=x=>String(x).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+function data(){
+ let states=list($("states").value), alphabet=list($("alphabet").value), start=$("start").value.trim(), finals=list($("final").value), input=$("input").value.trim(), T={};
+ $("trans").value.split("\n").map(x=>x.trim()).filter(Boolean).forEach(line=>{
+   let p=line.split(",").map(x=>x.trim()); if(p.length!==3) throw Error("Invalid transition: "+line);
+   T[p[0]]??={}; T[p[0]][p[1]]=p[2];
+ });
+ if(!states.includes(start))throw Error("Start state must belong to Q.");
+ finals.forEach(f=>{if(!states.includes(f))throw Error("Final state "+f+" is not in Q.")});
+ states.forEach(q=>alphabet.forEach(a=>{if(!T[q]?.[a])throw Error(`Missing transition δ(${q}, ${a}).`);if(!states.includes(T[q][a]))throw Error("Invalid destination "+T[q][a])}));
+ return {states,alphabet,start,finals,input,T};
+}
+function build(){try{D=data();S=null;k=0;renderAll();status("DFA generated successfully.","ok")}catch(e){status(e.message,"err")}}
+function renderAll(){table();code();tape();graph();result();$("exec").innerHTML="DFA is ready. Click <b>Step Transition Arrow</b> to move through the input."}
+function table(){let h="<table class=table><thead><tr><th>State</th>"+D.alphabet.map(a=>`<th>${esc(a)}</th>`).join("")+"</tr></thead><tbody>";D.states.forEach(q=>{h+=`<tr><td><b>${esc(q)}</b></td>`;D.alphabet.forEach(a=>h+=`<td>δ(${esc(q)}, ${esc(a)}) = ${esc(D.T[q][a])}</td>`);h+="</tr>"});$("tt").innerHTML=h+"</tbody></table>"}
+function code(){let h=`1. States Q = {${D.states.join(", ")}}, Alphabet Σ = {${D.alphabet.join(", ")}}, Initial = ${D.start}, Final F = {${D.finals.join(", ")}}<br>2. Transition Table δ:<br>`;D.states.forEach((q,i)=>h+=`<div id=c${i} class=code>    ${D.alphabet.map(a=>`δ(${q}, '${a}') = ${D.T[q][a]}`).join(", ")}</div>`);h+="<br>3. Check: If current_state in F → ACCEPT, Else → REJECT";$("code").innerHTML=h}
+function tape(){let h=D.input?[...D.input].map((x,i)=>`<div id=cell${i} class=cell>${esc(x)}</div>`).join(""):`<div class=cell>ε</div>`;$("tape").innerHTML=h;$("lang").textContent="("+$("language").value+")"}
+function run(){try{D=data();let q=D.start,steps=[];[...D.input].forEach((a,i)=>{let n=D.T[q][a];steps.push({i,from:q,s:a,to:n});q=n});S={steps,final:q,accepted:D.finals.includes(q)};k=S.steps.length;renderAll();result();execution();graph();status(S.accepted?`ACCEPT — ${S.final} ∈ F`:`REJECT — ${S.final} ∉ F`,S.accepted?"ok":"bad")}catch(e){status(e.message,"err")}}
+function prepare(){if(!S){let q=D.start,steps=[];[...D.input].forEach((a,i)=>{let n=D.T[q][a];steps.push({i,from:q,s:a,to:n});q=n});S={steps,final:q,accepted:D.finals.includes(q)}}}
+function step(){try{D??=data();prepare();if(k<S.steps.length)k++;graph();result();execution();let s=k?S.steps[k-1]:null;D.states.forEach((q,i)=>$("c"+i)?.classList.remove("hl"));if(s){let i=D.states.indexOf(s.from);$("c"+i)?.classList.add("hl")}if(k===S.steps.length)status(S.accepted?`ACCEPT — ${S.final} ∈ F`:`REJECT — ${S.final} ∉ F`,S.accepted?"ok":"bad")}catch(e){status(e.message,"err")}}
+function reset(){
+  try{
+    D = data();
+    S = null;
+    k = 0;
+
+    table();
+    tape();
+    graph();
+    result();
+
+    $("exec").innerHTML =
+      "DFA reset. Click <b>Step Transition Arrow</b> to move through the input.";
+
+    D.states.forEach((q,i)=>{
+      const line = $("c"+i);
+      if(line) line.classList.remove("hl");
+    });
+
+    status("DFA reset successfully.","ok");
+  }catch(e){
+    status(e.message,"err");
+  }
+}
+function positions(){let p={};if(D.states.length===3){D.states.forEach((q,i)=>p[q]={x:230+i*220,y:270});return p}let cx=450,cy=270,rx=300,ry=170;D.states.forEach((q,i)=>{let a=-Math.PI/2+i*2*Math.PI/D.states.length;p[q]={x:cx+rx*Math.cos(a),y:cy+ry*Math.sin(a)}});return p}
+function active(e){return S&&k>0&&k<=S.steps.length&&S.steps[k-1].from===e.from&&S.steps[k-1].to===e.to&&S.steps[k-1].s===e.s}
+function graph(){if(!D)return;let E=$("edges"),N=$("nodes");E.innerHTML="";N.innerHTML="";let P=positions(), edges=[];D.states.forEach(f=>D.alphabet.forEach(a=>edges.push({from:f,to:D.T[f][a],s:a})));let groups={};edges.forEach(e=>{let key=e.from===e.to?"L"+e.from:[e.from,e.to].sort().join("|");(groups[key]??=[]).push(e)});let off={};Object.values(groups).forEach(g=>{
+  if(g.length===2 && g[0].from!==g[0].to){
+    const a=g[0], b=g[1];
+
+    // Two distinct one-way arcs. Their arrowheads cannot merge.
+    off[a.from+"|"+a.s] = -75;
+    off[b.from+"|"+b.s] = 75;
+  }else{
+    g.forEach((e,i)=>{
+      off[e.from+"|"+e.s] = (i-(g.length-1)/2)*50;
+    });
+  }
+});edges.forEach(e=>e.from===e.to?loop(E,P[e.from],e.s,active(e)):edge(E,P[e.from],P[e.to],e.s,off[e.from+"|"+e.s]||0,active(e)));D.states.forEach(q=>{let p=P[q],g=document.createElementNS(NS,"g"),c=document.createElementNS(NS,"circle"),cur=!S?k===0&&q===D.start:k>0&&k<=S.steps.length?q===S.steps[k-1].to:q===S.final;c.setAttribute("cx",p.x);
+c.setAttribute("cy",p.y);
+c.setAttribute("r",31);
+
+let stateClass = "state";
+if(q===D.start) stateClass += " start-state";
+if(D.finals.includes(q)) stateClass += " final-state";
+if(cur) stateClass += " current";
+if(S&&k===S.steps.length&&S.accepted&&q===S.final) stateClass += " accept";
+
+c.setAttribute("class",stateClass);g.appendChild(c);if(D.finals.includes(q)){
+  let acceptedFinal = S && k===S.steps.length && S.accepted && q===S.final;
+  let r=document.createElementNS(NS,"circle");
+  r.setAttribute("cx",p.x);
+  r.setAttribute("cy",p.y);
+  r.setAttribute("r",37);
+  r.setAttribute("class","ring"+(acceptedFinal?" accept":""));
+  g.appendChild(r);
+}let t=document.createElementNS(NS,"text");t.setAttribute("x",p.x);t.setAttribute("y",p.y);t.setAttribute("class","slabel");t.textContent=q;g.appendChild(t);N.appendChild(g)});let p=P[D.start],l=document.createElementNS(NS,"line");l.setAttribute("x1",p.x-80);l.setAttribute("y1",p.y);l.setAttribute("x2",p.x-34);l.setAttribute("y2",p.y);l.setAttribute("class","start");l.setAttribute("marker-end","url(#arr)");N.appendChild(l);let st=document.createElementNS(NS,"text");st.setAttribute("x",p.x-80);st.setAttribute("y",p.y-16);st.setAttribute("class","starttext");st.textContent="Start";N.appendChild(st)}
+function edge(L,a,b,s,o,act){
+  let dx=b.x-a.x, dy=b.y-a.y, len=Math.hypot(dx,dy);
+  let ux=dx/len, uy=dy/len, nx=-uy, ny=ux;
+  let sx=a.x+ux*32, sy=a.y+uy*32;
+  let ex=b.x-ux*34, ey=b.y-uy*34;
+
+  let mx=(sx+ex)/2+nx*o;
+  let my=(sy+ey)/2+ny*o;
+
+  // Give the q2 -> q0 transition a dedicated lower route.
+  if(a.x>b.x && Math.abs(a.x-b.x)>300){
+    mx=(sx+ex)/2;
+    my=Math.max(sy,ey)+150;
+  }
+
+  let p=document.createElementNS(NS,"path");
+  p.setAttribute("d",`M${sx} ${sy} Q${mx} ${my} ${ex} ${ey}`);
+  p.setAttribute("class","edge"+(act?" active":""));
+  p.removeAttribute("marker-start");
+  p.setAttribute("marker-end",act?"url(#arrred)":"url(#arr)");
+  L.appendChild(p);
+
+  let t=document.createElementNS(NS,"text");
+
+  let lx=.25*sx+.5*mx+.25*ex;
+  let ly=.25*sy+.5*my+.25*ey-10;
+
+  // Keep the lower q2 -> q0 label below its arc.
+  if(a.x>b.x && Math.abs(a.x-b.x)>300){
+    ly-=4;
+  }
+
+  t.setAttribute("x",lx);
+  t.setAttribute("y",ly);
+  t.setAttribute("class","elabel"+(act?" active":""));
+  t.textContent=s;
+  L.appendChild(t);
+}
+function loop(L,p,s,act){let path=document.createElementNS(NS,"path");path.setAttribute("d",`M${p.x-20} ${p.y-23} C${p.x-62} ${p.y-92},${p.x+62} ${p.y-92},${p.x+20} ${p.y-23}`);path.setAttribute("class","edge"+(act?" active":""));path.setAttribute("marker-end",act?"url(#arrred)":"url(#arr)");L.appendChild(path);let t=document.createElementNS(NS,"text");t.setAttribute("x",p.x);t.setAttribute("y",p.y-95);t.setAttribute("class","elabel"+(act?" active":""));t.textContent=s;L.appendChild(t)}
+function result(){if(!D)return;let q=D.start,s="—",tr="Awaiting Step";if(S&&k){let x=S.steps[k-1];q=x.to;s=x.s;tr=`${x.from} --${x.s}--> ${x.to}`}$("rs").textContent=q;$("ri").textContent=s;$("rt").textContent=tr;let a=$("ra"),yes=S&&k===S.steps.length&&S.accepted;a.textContent=yes?"YES":"NO";a.className=yes?"yes":"no";[...D.input].forEach((x,i)=>{let c=$("cell"+i);if(c){c.className="cell"+(S&&i<k?" done":"")+(S&&i===k-1?" active":"")}})}
+function execution(){if(!S){$("exec").innerHTML="Simulation not started.";return}let h=S.steps.map((x,i)=>`<div class=exrow style="${i===k-1?"background:#fff7d6;font-weight:700":""}">Step ${i+1}: ${esc(x.from)} --${esc(x.s)}--> ${esc(x.to)} ${i<k?"✓":""}</div>`).join("");if(k===S.steps.length)h+=`<div class=exrow><b>Final state: ${esc(S.final)} → ${S.accepted?"ACCEPT":"REJECT"}</b></div>`;$("exec").innerHTML=h}
+function status(m,c){$("status").textContent=m;$("status").className="status "+c}
+addEventListener("DOMContentLoaded",build);
+</script>
+</body>
+</html>

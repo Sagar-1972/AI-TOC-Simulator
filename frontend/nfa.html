@@ -1,0 +1,2524 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>NFA Simulator | AI-TOC Simulator</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+
+            background: #0f172a;
+
+            color: #e2e8f0;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #111827,
+                    #581c87
+                );
+
+            padding: 32px 20px 20px;
+
+            text-align: center;
+
+            border-bottom:
+                1px solid #334155;
+        }
+
+
+        header h1 {
+
+            margin: 0 0 8px;
+
+            font-size: 32px;
+        }
+
+
+        header p {
+
+            margin: 0;
+
+            color: #cbd5e1;
+        }
+
+
+        /* =========================
+           MENU
+        ========================= */
+
+        .menu {
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            flex-wrap: wrap;
+
+            gap: 8px;
+
+            width: fit-content;
+
+            max-width: 94%;
+
+            margin: 18px auto 25px;
+
+            padding: 7px;
+
+            background: #111827;
+
+            border:
+                1px solid #334155;
+
+            border-radius: 50px;
+
+            box-shadow:
+                0 8px 25px
+                rgba(0, 0, 0, 0.25);
+        }
+
+
+        .menu a {
+
+            text-decoration: none;
+
+            color: #cbd5e1;
+
+            padding: 10px 18px;
+
+            border-radius: 30px;
+
+            font-weight: 600;
+
+            transition: 0.2s;
+        }
+
+
+        .menu a:hover {
+
+            background: #1e293b;
+
+            color: white;
+        }
+
+
+        .menu .active {
+
+            background: #9333ea;
+
+            color: white;
+
+            box-shadow:
+                0 5px 15px
+                rgba(147, 51, 234, 0.3);
+        }
+
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .container {
+
+            width: min(1150px, 94%);
+
+            margin: 0 auto 50px;
+        }
+
+
+        .page-title {
+
+            text-align: center;
+
+            margin: 25px 0;
+        }
+
+
+        .page-title h2 {
+
+            color: #c084fc;
+
+            font-size: 30px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .page-title p {
+
+            color: #94a3b8;
+        }
+
+
+        /* =========================
+           CARD
+        ========================= */
+
+        .card {
+
+            background: #111827;
+
+            border:
+                1px solid #334155;
+
+            border-radius: 16px;
+
+            padding: 24px;
+
+            box-shadow:
+                0 12px 30px
+                rgba(0, 0, 0, 0.22);
+        }
+
+
+        .form-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 20px;
+        }
+
+
+        .field {
+
+            min-width: 0;
+        }
+
+
+        .full {
+
+            grid-column:
+                1 / -1;
+        }
+
+
+        label {
+
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-weight: bold;
+
+            color: #cbd5e1;
+        }
+
+
+        input,
+        textarea {
+
+            width: 100%;
+
+            border:
+                1px solid #475569;
+
+            border-radius: 9px;
+
+            padding: 11px 12px;
+
+            background: #0f172a;
+
+            color: #f8fafc;
+
+            outline: none;
+
+            font-size: 14px;
+        }
+
+
+        input:focus,
+        textarea:focus {
+
+            border-color:
+                #c084fc;
+        }
+
+
+        textarea {
+
+            min-height: 190px;
+
+            resize: vertical;
+
+            font-family:
+                Consolas,
+                monospace;
+        }
+
+
+        .help {
+
+            color: #94a3b8;
+
+            font-size: 12px;
+
+            line-height: 1.6;
+
+            margin-top: 7px;
+        }
+
+
+        .example {
+
+            color: #c084fc;
+        }
+
+
+        /* =========================
+           BUTTON
+        ========================= */
+
+        button {
+
+            width: 100%;
+
+            border: none;
+
+            border-radius: 10px;
+
+            padding: 13px 16px;
+
+            margin-top: 5px;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            color: white;
+
+            background: #9333ea;
+
+            transition: 0.2s;
+        }
+
+
+        button:hover {
+
+            background: #7e22ce;
+
+            transform:
+                translateY(-1px);
+        }
+
+
+        /* =========================
+           RESULT
+        ========================= */
+
+        .result {
+
+            margin-top: 20px;
+
+            border-radius: 12px;
+
+            padding: 16px;
+
+            display: none;
+        }
+
+
+        .accepted {
+
+            background: #052e16;
+
+            border:
+                1px solid #22c55e;
+        }
+
+
+        .rejected {
+
+            background: #450a0a;
+
+            border:
+                1px solid #ef4444;
+        }
+
+
+        .error {
+
+            background: #451a03;
+
+            border:
+                1px solid #f97316;
+        }
+
+
+        .result-title {
+
+            font-size: 21px;
+
+            font-weight: bold;
+
+            margin-bottom: 12px;
+        }
+
+
+        .result p {
+
+            margin: 8px 0;
+
+            line-height: 1.5;
+        }
+
+
+        /* =========================
+           EXECUTION PATH
+        ========================= */
+
+        .execution {
+
+            margin-top: 15px;
+        }
+
+
+        .step {
+
+            display: grid;
+
+            grid-template-columns:
+                80px 90px 1fr;
+
+            gap: 10px;
+
+            align-items: center;
+
+            padding: 10px 12px;
+
+            margin-top: 7px;
+
+            background: #020617;
+
+            border:
+                1px solid #1e293b;
+
+            border-radius: 8px;
+        }
+
+
+        .step-number {
+
+            color: #94a3b8;
+
+            font-weight: bold;
+        }
+
+
+        .step-input {
+
+            color: #c084fc;
+
+            font-family:
+                Consolas,
+                monospace;
+
+            font-weight: bold;
+        }
+
+
+        .step-states {
+
+            color: #f8fafc;
+
+            font-family:
+                Consolas,
+                monospace;
+        }
+
+
+        /* =========================
+           DIAGRAM
+        ========================= */
+
+        .diagram-card {
+
+            margin-top: 22px;
+        }
+
+
+        .diagram-card h3 {
+
+            color: #c084fc;
+
+            margin-top: 0;
+        }
+
+
+        .diagram {
+
+            width: 100%;
+
+            min-height: 430px;
+
+            background: #020617;
+
+            border:
+                1px solid #334155;
+
+            border-radius: 12px;
+
+            overflow: auto;
+
+            padding: 10px;
+        }
+
+
+        svg {
+
+            display: block;
+
+            width: 100%;
+
+            min-width: 760px;
+
+            height: 400px;
+        }
+
+
+        /* =========================
+           LEGEND
+        ========================= */
+
+        .legend {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 18px;
+
+            margin-top: 12px;
+
+            color: #94a3b8;
+
+            font-size: 13px;
+        }
+
+
+        .legend span {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+        }
+
+
+        .dot {
+
+            width: 12px;
+
+            height: 12px;
+
+            display: inline-block;
+
+            border-radius: 50%;
+
+            border:
+                2px solid #c084fc;
+        }
+
+
+        .dot.final {
+
+            border-color:
+                #22c55e;
+        }
+
+
+        .dot.start {
+
+            background:
+                #c084fc;
+        }
+
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+
+            text-align: center;
+
+            padding: 25px;
+
+            color: #64748b;
+
+            border-top:
+                1px solid #1e293b;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 750px) {
+
+            .form-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .full {
+
+                grid-column: auto;
+            }
+
+
+            header h1 {
+
+                font-size: 26px;
+            }
+
+
+            .menu {
+
+                border-radius: 15px;
+            }
+
+
+            .menu a {
+
+                padding:
+                    9px 12px;
+            }
+
+
+            .step {
+
+                grid-template-columns:
+                    60px 70px 1fr;
+
+                font-size: 13px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header>
+
+    <h1>
+        🤖 AI-TOC Simulator
+    </h1>
+
+    <p>
+        Theory of Computation Learning Platform
+    </p>
+
+</header>
+
+
+<!-- =========================
+     CENTER MENU
+========================= -->
+
+<nav class="menu">
+
+    <a href="index.html">
+        🏠 Home
+    </a>
+
+    <a href="dfa.html">
+        🔵 DFA
+    </a>
+
+    <a
+        href="nfa.html"
+        class="active"
+    >
+        🟣 NFA
+    </a>
+
+    <a href="enfa.html">
+        🟠 ε-NFA
+    </a>
+
+</nav>
+
+
+<main class="container">
+
+
+    <!-- =========================
+         TITLE
+    ========================= -->
+
+    <section class="page-title">
+
+        <h2>
+            🟣 NFA Simulator
+        </h2>
+
+        <p>
+            Non-Deterministic Finite Automaton
+            simulation and visualization
+        </p>
+
+    </section>
+
+
+    <!-- =========================
+         SIMULATOR
+    ========================= -->
+
+    <section class="card">
+
+        <div class="form-grid">
+
+
+            <!-- STATES -->
+
+            <div class="field">
+
+                <label for="states">
+                    States
+                </label>
+
+                <input
+                    id="states"
+                    type="text"
+                    value="q0,q1,q2"
+                    placeholder="Example: q0,q1,q2"
+                >
+
+            </div>
+
+
+            <!-- ALPHABET -->
+
+            <div class="field">
+
+                <label for="alphabet">
+                    Alphabet
+                </label>
+
+                <input
+                    id="alphabet"
+                    type="text"
+                    value="0,1"
+                    placeholder="Example: 0,1"
+                >
+
+            </div>
+
+
+            <!-- START -->
+
+            <div class="field">
+
+                <label for="startState">
+                    Start State
+                </label>
+
+                <input
+                    id="startState"
+                    type="text"
+                    value="q0"
+                    placeholder="Example: q0"
+                >
+
+            </div>
+
+
+            <!-- FINAL -->
+
+            <div class="field">
+
+                <label for="finalStates">
+                    Final States
+                </label>
+
+                <input
+                    id="finalStates"
+                    type="text"
+                    value="q2"
+                    placeholder="Example: q2"
+                >
+
+            </div>
+
+
+            <!-- TRANSITIONS -->
+
+            <div class="field full">
+
+                <label for="transitions">
+                    NFA Transition Table
+                </label>
+
+                <textarea id="transitions">q0,0,q0
+q0,1,q0|q1
+q1,0,q2
+q1,1,
+q2,0,q2
+q2,1,q2</textarea>
+
+                <p class="help">
+
+                    Enter one transition per line:
+
+                    <strong>
+                        state,symbol,destination1|destination2
+                    </strong>
+
+                    <br>
+
+                    Example:
+
+                    <span class="example">
+                        q0,1,q0|q1
+                    </span>
+
+                    means that on input
+                    <strong>1</strong>,
+                    NFA can move to both
+                    <strong>q0</strong>
+                    and
+                    <strong>q1</strong>.
+
+                    <br>
+
+                    If there is no transition,
+                    leave the destination empty.
+
+                </p>
+
+            </div>
+
+
+            <!-- INPUT -->
+
+            <div class="field full">
+
+                <label for="inputString">
+                    Input String
+                </label>
+
+                <input
+                    id="inputString"
+                    type="text"
+                    value="110"
+                    placeholder="Example: 110"
+                >
+
+            </div>
+
+
+            <!-- BUTTON -->
+
+            <div class="field full">
+
+                <button
+                    onclick="simulateNFA()"
+                >
+                    ▶ Simulate NFA
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- RESULT -->
+
+        <div
+            id="result"
+            class="result"
+        ></div>
+
+    </section>
+
+
+    <!-- =========================
+         DIAGRAM
+    ========================= -->
+
+    <section
+        class="card diagram-card"
+    >
+
+        <h3>
+            🟣 NFA State Diagram
+        </h3>
+
+        <div
+            id="diagram"
+            class="diagram"
+        >
+
+            <p
+                style="
+                    text-align:center;
+                    color:#64748b;
+                "
+            >
+                Run the simulator to generate
+                the NFA diagram.
+            </p>
+
+        </div>
+
+
+        <div class="legend">
+
+            <span>
+
+                <i class="dot start"></i>
+
+                Start state
+
+            </span>
+
+
+            <span>
+
+                <i class="dot final"></i>
+
+                Final state
+
+            </span>
+
+
+            <span>
+
+                ○ Normal state
+
+            </span>
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+<footer>
+
+    AI-TOC Simulator
+
+    <br>
+
+    NFA Simulation Module
+
+</footer>
+
+
+<script>
+
+
+/* =========================
+   BACKEND
+========================= */
+
+const BACKEND_URL =
+    "http://127.0.0.1:8000";
+
+
+/* =========================
+   PARSE LIST
+========================= */
+
+function parseList(value) {
+
+    return value
+        .split(",")
+        .map(
+            item => item.trim()
+        )
+        .filter(
+            item =>
+                item.length > 0
+        );
+
+}
+
+
+/* =========================
+   ESCAPE HTML
+========================= */
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================
+   ERROR
+========================= */
+
+function showError(message) {
+
+    const result =
+        document.getElementById(
+            "result"
+        );
+
+
+    result.style.display =
+        "block";
+
+
+    result.className =
+        "result error";
+
+
+    result.innerHTML = `
+
+        <div class="result-title">
+            ⚠️ Error
+        </div>
+
+        <p>
+            ${escapeHTML(message)}
+        </p>
+
+    `;
+
+}
+
+
+/* =========================
+   SIMULATE NFA
+========================= */
+
+async function simulateNFA() {
+
+    try {
+
+        const states =
+            parseList(
+                document
+                    .getElementById("states")
+                    .value
+            );
+
+
+        const alphabet =
+            parseList(
+                document
+                    .getElementById("alphabet")
+                    .value
+            );
+
+
+        const startState =
+            document
+                .getElementById("startState")
+                .value
+                .trim();
+
+
+        const finalStates =
+            parseList(
+                document
+                    .getElementById("finalStates")
+                    .value
+            );
+
+
+        const input =
+            document
+                .getElementById("inputString")
+                .value
+                .trim();
+
+
+        const transitionText =
+            document
+                .getElementById("transitions")
+                .value
+                .trim();
+
+
+        /* =========================
+           BASIC VALIDATION
+        ========================= */
+
+        if (states.length === 0) {
+
+            throw new Error(
+                "Please enter at least one state."
+            );
+
+        }
+
+
+        if (alphabet.length === 0) {
+
+            throw new Error(
+                "Please enter at least one alphabet symbol."
+            );
+
+        }
+
+
+        if (!startState) {
+
+            throw new Error(
+                "Please enter the start state."
+            );
+
+        }
+
+
+        if (
+            !states.includes(
+                startState
+            )
+        ) {
+
+            throw new Error(
+                `Start state "${startState}" does not exist.`
+            );
+
+        }
+
+
+        if (
+            finalStates.length === 0
+        ) {
+
+            throw new Error(
+                "Please enter at least one final state."
+            );
+
+        }
+
+
+        for (
+            const state
+            of finalStates
+        ) {
+
+            if (
+                !states.includes(state)
+            ) {
+
+                throw new Error(
+                    `Final state "${state}" does not exist.`
+                );
+
+            }
+
+        }
+
+
+        /* =========================
+           BUILD TRANSITIONS
+        ========================= */
+
+        const transitions = {};
+
+
+        states.forEach(
+            state => {
+
+                transitions[state] =
+                    {};
+
+            }
+        );
+
+
+        const lines =
+            transitionText
+                .split("\n")
+                .map(
+                    line =>
+                        line.trim()
+                )
+                .filter(
+                    line =>
+                        line.length > 0
+                );
+
+
+        for (
+            const line
+            of lines
+        ) {
+
+            const parts =
+                line
+                    .split(",")
+                    .map(
+                        part =>
+                            part.trim()
+                    );
+
+
+            if (
+                parts.length !== 3
+            ) {
+
+                throw new Error(
+                    `Invalid transition "${line}". Use state,symbol,destination1|destination2.`
+                );
+
+            }
+
+
+            const state =
+                parts[0];
+
+            const symbol =
+                parts[1];
+
+            const destinationText =
+                parts[2];
+
+
+            if (
+                !states.includes(state)
+            ) {
+
+                throw new Error(
+                    `Unknown state "${state}".`
+                );
+
+            }
+
+
+            if (
+                !alphabet.includes(symbol)
+            ) {
+
+                throw new Error(
+                    `Unknown alphabet symbol "${symbol}".`
+                );
+
+            }
+
+
+            let destinations = [];
+
+
+            if (
+                destinationText.length > 0
+            ) {
+
+                destinations =
+                    destinationText
+                        .split("|")
+                        .map(
+                            item =>
+                                item.trim()
+                        )
+                        .filter(
+                            item =>
+                                item.length > 0
+                        );
+
+            }
+
+
+            for (
+                const destination
+                of destinations
+            ) {
+
+                if (
+                    !states.includes(
+                        destination
+                    )
+                ) {
+
+                    throw new Error(
+                        `Unknown destination state "${destination}".`
+                    );
+
+                }
+
+            }
+
+
+            transitions[state][symbol] =
+                destinations;
+
+        }
+
+
+        /* =========================
+           ADD EMPTY TRANSITIONS
+        ========================= */
+
+        states.forEach(
+            state => {
+
+                alphabet.forEach(
+                    symbol => {
+
+                        if (
+                            !(
+                                symbol
+                                in
+                                transitions[state]
+                            )
+                        ) {
+
+                            transitions[state][symbol] =
+                                [];
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+        /* =========================
+           REQUEST
+        ========================= */
+
+        const requestData = {
+
+            states:
+
+                states,
+
+            alphabet:
+
+                alphabet,
+
+            transitions:
+
+                transitions,
+
+            start_state:
+
+                startState,
+
+            final_states:
+
+                finalStates,
+
+            input:
+
+                input
+
+        };
+
+
+        const result =
+            document.getElementById(
+                "result"
+            );
+
+
+        result.style.display =
+            "block";
+
+
+        result.className =
+            "result";
+
+
+        result.innerHTML =
+            "⏳ Simulating NFA...";
+
+
+        /* =========================
+           SEND TO FASTAPI
+        ========================= */
+
+        const response =
+            await fetch(
+                `${BACKEND_URL}/nfa/simulate`,
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify(
+                            requestData
+                        )
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.detail
+                    ? JSON.stringify(
+                        data.detail
+                    )
+                    : "NFA simulation failed."
+            );
+
+        }
+
+
+        displayResult(
+            data
+        );
+
+
+        drawNFA(
+            states,
+            transitions,
+            startState,
+            finalStates
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+        showError(
+            error.message
+        );
+
+    }
+
+}
+
+
+/* =========================
+   DISPLAY RESULT
+========================= */
+
+function displayResult(data) {
+
+    const result =
+        document.getElementById(
+            "result"
+        );
+
+
+    result.style.display =
+        "block";
+
+
+    if (data.accepted) {
+
+        result.className =
+            "result accepted";
+
+
+        result.innerHTML = `
+
+            <div class="result-title">
+                ✅ ACCEPTED
+            </div>
+
+            <p>
+
+                <strong>
+                    Input:
+                </strong>
+
+                ${escapeHTML(
+                    data.input
+                )}
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Final States:
+                </strong>
+
+                ${data.final_states
+                    .map(
+                        state =>
+                            escapeHTML(state)
+                    )
+                    .join(", ")
+                }
+
+            </p>
+
+
+            <div class="execution">
+
+                <strong>
+                    Execution Path:
+                </strong>
+
+                ${buildExecutionPath(
+                    data.path
+                )}
+
+            </div>
+
+        `;
+
+    }
+
+    else {
+
+        result.className =
+            "result rejected";
+
+
+        result.innerHTML = `
+
+            <div class="result-title">
+                ❌ REJECTED
+            </div>
+
+
+            <p>
+
+                <strong>
+                    Input:
+                </strong>
+
+                ${escapeHTML(
+                    data.input || ""
+                )}
+
+            </p>
+
+
+            ${
+                data.reason
+                ?
+                `
+                    <p>
+
+                        <strong>
+                            Reason:
+                        </strong>
+
+                        ${escapeHTML(
+                            data.reason
+                        )}
+
+                    </p>
+                `
+                :
+                ""
+            }
+
+
+            ${
+                data.final_states
+                ?
+                `
+                    <p>
+
+                        <strong>
+                            Final States:
+                        </strong>
+
+                        ${
+                            data.final_states
+                                .map(
+                                    state =>
+                                        escapeHTML(
+                                            state
+                                        )
+                                )
+                                .join(", ")
+                        }
+
+                    </p>
+                `
+                :
+                ""
+            }
+
+
+            <div class="execution">
+
+                <strong>
+                    Execution Path:
+                </strong>
+
+                ${buildExecutionPath(
+                    data.path
+                )}
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* =========================
+   EXECUTION PATH
+========================= */
+
+function buildExecutionPath(
+    path
+) {
+
+    if (
+        !path ||
+        path.length === 0
+    ) {
+
+        return `
+            <p>
+                No execution path available.
+            </p>
+        `;
+
+    }
+
+
+    return path
+        .map(
+            (states, index) => {
+
+                return `
+
+                    <div class="step">
+
+                        <div class="step-number">
+
+                            Step ${index}
+
+                        </div>
+
+
+                        <div class="step-input">
+
+                            ${
+                                index === 0
+                                ? "Start"
+                                : "Input"
+                            }
+
+                        </div>
+
+
+                        <div class="step-states">
+
+                            ${
+                                Array.isArray(states)
+                                ?
+                                `[ ${states
+                                    .map(
+                                        state =>
+                                            escapeHTML(
+                                                state
+                                            )
+                                    )
+                                    .join(", ")}
+                                ]`
+                                :
+                                escapeHTML(
+                                    states
+                                )
+                            }
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+        )
+        .join("");
+
+}
+
+
+/* =========================
+   SVG ELEMENT
+========================= */
+
+function createSVGElement(
+    tag,
+    attributes = {}
+) {
+
+    const element =
+        document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            tag
+        );
+
+
+    Object.entries(
+        attributes
+    ).forEach(
+        ([key, value]) => {
+
+            element.setAttribute(
+                key,
+                value
+            );
+
+        }
+    );
+
+
+    return element;
+
+}
+
+
+/* =========================
+   TEXT
+========================= */
+
+function addText(
+    svg,
+    text,
+    x,
+    y,
+    attributes = {}
+) {
+
+    const element =
+        createSVGElement(
+            "text",
+            {
+                x,
+                y,
+                ...attributes
+            }
+        );
+
+
+    element.textContent =
+        text;
+
+
+    svg.appendChild(
+        element
+    );
+
+
+    return element;
+
+}
+
+
+/* =========================
+   ARROW MARKER
+========================= */
+
+function setupMarker(svg) {
+
+    const defs =
+        createSVGElement(
+            "defs"
+        );
+
+
+    const marker =
+        createSVGElement(
+            "marker",
+            {
+
+                id:
+                    "nfaArrow",
+
+                markerWidth:
+                    "10",
+
+                markerHeight:
+                    "10",
+
+                refX:
+                    "9",
+
+                refY:
+                    "3",
+
+                orient:
+                    "auto",
+
+                markerUnits:
+                    "strokeWidth"
+
+            }
+        );
+
+
+    const path =
+        createSVGElement(
+            "path",
+            {
+
+                d:
+                    "M0,0 L0,6 L9,3 z",
+
+                fill:
+                    "#94a3b8"
+
+            }
+        );
+
+
+    marker.appendChild(
+        path
+    );
+
+
+    defs.appendChild(
+        marker
+    );
+
+
+    svg.appendChild(
+        defs
+    );
+
+}
+
+
+/* =========================
+   DRAW NFA
+========================= */
+
+function drawNFA(
+    states,
+    transitions,
+    startState,
+    finalStates
+) {
+
+    const container =
+        document.getElementById(
+            "diagram"
+        );
+
+
+    container.innerHTML =
+        "";
+
+
+    const svg =
+        createSVGElement(
+            "svg",
+            {
+
+                viewBox:
+                    "0 0 1000 400",
+
+                role:
+                    "img"
+
+            }
+        );
+
+
+    setupMarker(
+        svg
+    );
+
+
+    const positions =
+        calculatePositions(
+            states
+        );
+
+
+    /*
+       Group transitions between
+       the same two states.
+    */
+
+    const grouped = {};
+
+
+    states.forEach(
+        state => {
+
+            const stateTransitions =
+                transitions[state] || {};
+
+
+            Object.entries(
+                stateTransitions
+            ).forEach(
+                ([symbol, destinations]) => {
+
+                    destinations.forEach(
+                        destination => {
+
+                            const key =
+                                `${state}__${destination}`;
+
+
+                            if (
+                                !grouped[key]
+                            ) {
+
+                                grouped[key] =
+                                    {
+                                        from:
+                                            state,
+
+                                        to:
+                                            destination,
+
+                                        symbols:
+                                            []
+                                    };
+
+                            }
+
+
+                            grouped[key]
+                                .symbols
+                                .push(symbol);
+
+                        }
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+    /* EDGES */
+
+    Object.values(
+        grouped
+    ).forEach(
+        edge => {
+
+            if (
+                positions[edge.from] &&
+                positions[edge.to]
+            ) {
+
+                drawEdge(
+                    svg,
+
+                    positions[edge.from],
+
+                    positions[edge.to],
+
+                    edge.symbols.join(","),
+
+                    edge.from ===
+                        edge.to
+                );
+
+            }
+
+        }
+    );
+
+
+    /* START ARROW */
+
+    if (
+        positions[startState]
+    ) {
+
+        const p =
+            positions[startState];
+
+
+        const line =
+            createSVGElement(
+                "line",
+                {
+
+                    x1:
+                        p.x - 75,
+
+                    y1:
+                        p.y,
+
+                    x2:
+                        p.x - 42,
+
+                    y2:
+                        p.y,
+
+                    stroke:
+                        "#c084fc",
+
+                    "stroke-width":
+                        "2.5",
+
+                    "marker-end":
+                        "url(#nfaArrow)"
+
+                }
+            );
+
+
+        svg.appendChild(
+            line
+        );
+
+
+        addText(
+            svg,
+
+            "start",
+
+            p.x - 74,
+
+            p.y - 10,
+
+            {
+
+                fill:
+                    "#c084fc",
+
+                "font-size":
+                    "13",
+
+                "text-anchor":
+                    "middle"
+
+            }
+        );
+
+    }
+
+
+    /* STATES */
+
+    states.forEach(
+        state => {
+
+            const p =
+                positions[state];
+
+
+            if (!p) {
+                return;
+            }
+
+
+            const isFinal =
+                finalStates.includes(
+                    state
+                );
+
+
+            const circle =
+                createSVGElement(
+                    "circle",
+                    {
+
+                        cx:
+                            p.x,
+
+                        cy:
+                            p.y,
+
+                        r:
+                            "38",
+
+                        fill:
+                            "#0f172a",
+
+                        stroke:
+                            isFinal
+                            ? "#22c55e"
+                            : "#c084fc",
+
+                        "stroke-width":
+                            "3"
+
+                    }
+                );
+
+
+            svg.appendChild(
+                circle
+            );
+
+
+            if (
+                isFinal
+            ) {
+
+                const inner =
+                    createSVGElement(
+                        "circle",
+                        {
+
+                            cx:
+                                p.x,
+
+                            cy:
+                                p.y,
+
+                            r:
+                                "31",
+
+                            fill:
+                                "none",
+
+                            stroke:
+                                "#22c55e",
+
+                            "stroke-width":
+                                "2"
+
+                        }
+                    );
+
+
+                svg.appendChild(
+                    inner
+                );
+
+            }
+
+
+            addText(
+                svg,
+
+                state,
+
+                p.x,
+
+                p.y + 6,
+
+                {
+
+                    fill:
+                        "#f8fafc",
+
+                    "font-size":
+                        "16",
+
+                    "font-weight":
+                        "bold",
+
+                    "text-anchor":
+                        "middle"
+
+                }
+            );
+
+        }
+    );
+
+
+    container.appendChild(
+        svg
+    );
+
+}
+
+
+/* =========================
+   DRAW EDGE
+========================= */
+
+function drawEdge(
+    svg,
+    from,
+    to,
+    label,
+    selfLoop
+) {
+
+    /* SELF LOOP */
+
+    if (selfLoop) {
+
+        const path =
+            createSVGElement(
+                "path",
+                {
+
+                    d: `
+                        M ${from.x - 25}
+                          ${from.y - 30}
+
+                        C ${from.x - 85}
+                          ${from.y - 105},
+
+                          ${from.x + 85}
+                          ${from.y - 105},
+
+                          ${from.x + 25}
+                          ${from.y - 30}
+                    `,
+
+                    fill:
+                        "none",
+
+                    stroke:
+                        "#94a3b8",
+
+                    "stroke-width":
+                        "2",
+
+                    "marker-end":
+                        "url(#nfaArrow)"
+
+                }
+            );
+
+
+        svg.appendChild(
+            path
+        );
+
+
+        addText(
+            svg,
+
+            label,
+
+            from.x,
+
+            from.y - 78,
+
+            {
+
+                fill:
+                    "#f8fafc",
+
+                "font-size":
+                    "14",
+
+                "text-anchor":
+                    "middle"
+
+            }
+        );
+
+
+        return;
+
+    }
+
+
+    const angle =
+        Math.atan2(
+            to.y - from.y,
+            to.x - from.x
+        );
+
+
+    const startX =
+        from.x +
+        Math.cos(angle) * 40;
+
+
+    const startY =
+        from.y +
+        Math.sin(angle) * 40;
+
+
+    const endX =
+        to.x -
+        Math.cos(angle) * 40;
+
+
+    const endY =
+        to.y -
+        Math.sin(angle) * 40;
+
+
+    const line =
+        createSVGElement(
+            "line",
+            {
+
+                x1:
+                    startX,
+
+                y1:
+                    startY,
+
+                x2:
+                    endX,
+
+                y2:
+                    endY,
+
+                stroke:
+                    "#94a3b8",
+
+                "stroke-width":
+                    "2",
+
+                "marker-end":
+                    "url(#nfaArrow)"
+
+            }
+        );
+
+
+    svg.appendChild(
+        line
+    );
+
+
+    const midX =
+        (startX + endX) / 2;
+
+
+    const midY =
+        (startY + endY) / 2 - 8;
+
+
+    addText(
+        svg,
+
+        label,
+
+        midX,
+
+        midY,
+
+        {
+
+            fill:
+                "#f8fafc",
+
+            "font-size":
+                "14",
+
+            "font-weight":
+                "bold",
+
+            "text-anchor":
+                "middle"
+
+        }
+    );
+
+}
+
+
+/* =========================
+   CALCULATE POSITIONS
+========================= */
+
+function calculatePositions(
+    states
+) {
+
+    const positions = {};
+
+
+    const width = 1000;
+
+    const height = 400;
+
+
+    const centerX =
+        width / 2;
+
+
+    const centerY =
+        height / 2;
+
+
+    if (
+        states.length === 0
+    ) {
+
+        return positions;
+
+    }
+
+
+    const radius =
+        Math.min(
+            300,
+
+            100 +
+            states.length * 30
+        );
+
+
+    states.forEach(
+        (state, index) => {
+
+            const angle =
+                -Math.PI / 2 +
+                (
+                    2 *
+                    Math.PI *
+                    index
+                ) /
+                states.length;
+
+
+            positions[state] = {
+
+                x:
+                    centerX +
+                    radius *
+                    Math.cos(
+                        angle
+                    ),
+
+                y:
+                    centerY +
+                    radius *
+                    0.58 *
+                    Math.sin(
+                        angle
+                    )
+
+            };
+
+        }
+    );
+
+
+    return positions;
+
+}
+
+
+/* =========================
+   INITIAL DIAGRAM
+========================= */
+
+window.addEventListener(
+    "load",
+    () => {
+
+        drawNFA(
+
+            ["q0", "q1", "q2"],
+
+            {
+
+                q0: {
+
+                    "0":
+                        ["q0"],
+
+                    "1":
+                        ["q0", "q1"]
+
+                },
+
+                q1: {
+
+                    "0":
+                        ["q2"],
+
+                    "1":
+                        []
+
+                },
+
+                q2: {
+
+                    "0":
+                        ["q2"],
+
+                    "1":
+                        ["q2"]
+
+                }
+
+            },
+
+            "q0",
+
+            ["q2"]
+
+        );
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>

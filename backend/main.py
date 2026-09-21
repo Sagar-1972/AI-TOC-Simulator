@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 from backend.toc_engine.dfa import DFA
 from backend.toc_engine.nfa import NFA
+from backend.toc_engine.enfa import ENFA
 
 
 app = FastAPI(
@@ -13,7 +14,10 @@ app = FastAPI(
 )
 
 
-# Allow frontend to communicate with backend
+# =========================
+# CORS
+# =========================
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -24,7 +28,7 @@ app.add_middleware(
 
 
 # =========================
-# DFA REQUEST MODEL
+# DFA REQUEST
 # =========================
 
 class DFASimulationRequest(BaseModel):
@@ -37,10 +41,23 @@ class DFASimulationRequest(BaseModel):
 
 
 # =========================
-# NFA REQUEST MODEL
+# NFA REQUEST
 # =========================
 
 class NFASimulationRequest(BaseModel):
+    states: list[str]
+    alphabet: list[str]
+    transitions: dict[str, dict[str, list[str]]]
+    start_state: str
+    final_states: list[str]
+    input: str
+
+
+# =========================
+# ε-NFA REQUEST
+# =========================
+
+class ENFASimulationRequest(BaseModel):
     states: list[str]
     alphabet: list[str]
     transitions: dict[str, dict[str, list[str]]]
@@ -75,9 +92,7 @@ def simulate_dfa(request: DFASimulationRequest):
         final_states=request.final_states
     )
 
-    result = dfa.simulate(request.input)
-
-    return result
+    return dfa.simulate(request.input)
 
 
 # =========================
@@ -95,6 +110,22 @@ def simulate_nfa(request: NFASimulationRequest):
         final_states=request.final_states
     )
 
-    result = nfa.simulate(request.input)
+    return nfa.simulate(request.input)
 
-    return result
+
+# =========================
+# ε-NFA SIMULATION
+# =========================
+
+@app.post("/enfa/simulate")
+def simulate_enfa(request: ENFASimulationRequest):
+
+    enfa = ENFA(
+        states=request.states,
+        alphabet=request.alphabet,
+        transitions=request.transitions,
+        start_state=request.start_state,
+        final_states=request.final_states
+    )
+
+    return enfa.simulate(request.input)
