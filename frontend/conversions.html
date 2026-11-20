@@ -9,9 +9,7 @@
         body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #0f172a; color: #e2e8f0; }
         header {
             background: linear-gradient(135deg, #111827, #115e59);
-            padding: 32px 20px 20px;
-            text-align: center;
-            border-bottom: 1px solid #334155;
+            padding: 32px 20px 20px; text-align: center; border-bottom: 1px solid #334155;
         }
         header h1 { margin: 0 0 8px; font-size: 32px; }
         header p { margin: 0; color: #cbd5e1; }
@@ -22,7 +20,7 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.25);
         }
         .menu a {
-            text-decoration: none; color: #cbd5e1; padding: 10px 16px;
+            text-decoration: none; color: #cbd5e1; padding: 10px 18px;
             border-radius: 30px; font-weight: 600; font-size: 14px; transition: 0.2s;
         }
         .menu a:hover { background: #1e293b; color: white; }
@@ -53,7 +51,7 @@
             background: #0f172a; color: #f8fafc; outline: none; font-size: 14px;
         }
         input:focus, textarea:focus { border-color: #2dd4bf; }
-        textarea { min-height: 175px; resize: vertical; font-family: Consolas, monospace; }
+        textarea { min-height: 185px; resize: vertical; font-family: Consolas, monospace; }
         .help { color: #94a3b8; font-size: 12px; margin-top: 6px; line-height: 1.5; }
         button.run-btn {
             width: 100%; border: none; border-radius: 10px; padding: 13px 16px;
@@ -73,13 +71,18 @@
         th { background: #134e4a; color: #f0fdfa; }
         td { background: #0f172a; }
         .badge {
-            display: inline-block; padding: 3px 9px; border-radius: 6px;
-            background: #134e4a; color: #5eead4; font-family: Consolas, monospace; font-size: 13px; margin: 2px;
+            display: inline-block; padding: 4px 10px; border-radius: 6px;
+            background: #134e4a; color: #5eead4; font-family: Consolas, monospace; font-size: 13px; margin: 3px;
         }
         .step-item {
             padding: 9px 12px; background: #0f172a; border: 1px solid #1e293b;
             border-radius: 8px; margin-top: 7px; font-family: Consolas, monospace; font-size: 13px;
         }
+        .diagram-wrap {
+            margin-top: 18px; background: #0f172a; border: 1px solid #334155;
+            border-radius: 12px; padding: 12px; overflow: auto;
+        }
+        .diagram-wrap svg { display: block; width: 100%; min-width: 760px; height: 390px; }
         .err { background: #451a03; border-color: #f97316; color: #fed7aa; }
         footer { text-align: center; padding: 25px; color: #64748b; border-top: 1px solid #1e293b; }
         @media (max-width: 750px) { .form-grid { grid-template-columns: 1fr; } }
@@ -88,35 +91,32 @@
 <body>
 <header>
     <h1>🤖 AI-TOC Simulator</h1>
-    <p>Theory of Computation Learning Platform</p>
+    <p>Interactive Theory of Computation Learning Platform</p>
 </header>
+
 <nav class="menu">
-
-    <a href="index.html">🏠 Home</a>
-    <a href="dfa.html">🔵 DFA</a>
-    <a href="nfa.html">🟣 NFA</a>
-    <a href="enfa.html">🟠 ε-NFA</a>
+    <a href="index.html" >🏠 Home</a>
+    <a href="dfa.html" >🔵 DFA</a>
+    <a href="nfa.html" >🟣 NFA</a>
+    <a href="enfa.html" >🟠 ε-NFA</a>
     <a href="conversions.html" class="active">🔄 Conversions</a>
-    <a href="pda.html">📚 PDA</a>
-    <a href="tm.html">🎞️ Turing Machine</a>
-    <a href="ai-assistant.html">✨ AI Studio</a>
-
+    <a href="ai-assistant.html" >✨ AI Studio</a>
 </nav>
 <main class="container">
     <section class="page-title">
         <h2>🔄 Automata Conversions & Minimization</h2>
-        <p>Transform automata across formal representations with step-by-step transition tables</p>
+        <p>Convert between ε-NFA, NFA, and DFA or minimize DFA states with transition tables and diagrams</p>
     </section>
 
     <div class="tabs">
         <button class="tab-btn active" id="tab_nfa_dfa" onclick="selectMode('nfa_dfa')">🟣→🔵 NFA to DFA (Subset Construction)</button>
         <button class="tab-btn" id="tab_enfa_nfa" onclick="selectMode('enfa_nfa')">🟠→🟣 ε-NFA to NFA (ε-Closure)</button>
+        <button class="tab-btn" id="tab_enfa_dfa" onclick="selectMode('enfa_dfa')">🟠→🔵 ε-NFA to DFA (Direct Subset)</button>
         <button class="tab-btn" id="tab_min_dfa" onclick="selectMode('min_dfa')">🔵✂️ DFA State Minimization</button>
-        <button class="tab-btn" id="tab_regex_enfa" onclick="selectMode('regex_enfa')">🔤→🟠 Regex to ε-NFA (Thompson)</button>
     </div>
 
     <section class="card">
-        <div id="automataForm" class="form-grid">
+        <div class="form-grid">
             <div>
                 <label for="states">States</label>
                 <input id="states" type="text" value="q0,q1,q2">
@@ -141,15 +141,7 @@ q1,0,
 q1,1,q2
 q2,0,
 q2,1,</textarea>
-                <p id="transHelp" class="help">Format: state,symbol,dest1|dest2 (leave destination empty if none).</p>
-            </div>
-        </div>
-
-        <div id="regexForm" class="form-grid" style="display:none;">
-            <div class="full">
-                <label for="regexInput">Regular Expression</label>
-                <input id="regexInput" type="text" value="(a|b)*abb" placeholder="Example: (a|b)*abb or (0|1)+0">
-                <p class="help">Supports union <strong>|</strong>, concatenation, Kleene star <strong>*</strong>, plus <strong>+</strong>, optional <strong>?</strong>, and parentheses <strong>( )</strong>.</p>
+                <p id="transHelp" class="help">NFA transitions: state,symbol,dest1|dest2 (leave destination empty if none).</p>
             </div>
         </div>
 
@@ -176,48 +168,31 @@ const PRESETS = {
         alphabet: "0,1",
         start: "q0",
         final: "q2",
-        trans: "q0,0,q0|q1
-q0,1,q0
-q1,0,
-q1,1,q2
-q2,0,
-q2,1,",
-        help: "NFA transitions: state,symbol,dest1|dest2 (leave empty if none)."
+        trans: "q0,0,q0|q1\nq0,1,q0\nq1,0,\nq1,1,q2\nq2,0,\nq2,1,",
+        help: "NFA transitions: state,symbol,dest1|dest2 (leave destination empty if none)."
     },
     enfa_nfa: {
         states: "q0,q1,q2,q3",
         alphabet: "0,1",
         start: "q0",
         final: "q3",
-        trans: "q0,ε,q1
-q0,0,
-q0,1,
-q1,ε,
-q1,0,q2
-q1,1,
-q2,ε,
-q2,0,
-q2,1,q3
-q3,ε,
-q3,0,
-q3,1,",
-        help: "ε-NFA transitions: use ε or e for epsilon transitions."
+        trans: "q0,ε,q1\nq0,0,\nq0,1,\nq1,ε,\nq1,0,q2\nq1,1,\nq2,ε,\nq2,0,\nq2,1,q3\nq3,ε,\nq3,0,\nq3,1,",
+        help: "ε-NFA transitions: use ε or e for epsilon transitions (e.g., q0,ε,q1)."
+    },
+    enfa_dfa: {
+        states: "q0,q1,q2",
+        alphabet: "a,b",
+        start: "q0",
+        final: "q2",
+        trans: "q0,ε,q1\nq0,a,q0\nq0,b,\nq1,ε,q2\nq1,a,\nq1,b,q1\nq2,ε,\nq2,a,q2\nq2,b,q2",
+        help: "ε-NFA transitions: use ε or e for epsilon transitions. Converts directly to DFA using ε-closure."
     },
     min_dfa: {
         states: "A,B,C,D,E",
         alphabet: "0,1",
         start: "A",
         final: "E",
-        trans: "A,0,B
-A,1,C
-B,0,B
-B,1,D
-C,0,B
-C,1,C
-D,0,B
-D,1,E
-E,0,B
-E,1,C",
+        trans: "A,0,B\nA,1,C\nB,0,B\nB,1,D\nC,0,B\nC,1,C\nD,0,B\nD,1,E\nE,0,B\nE,1,C",
         help: "Complete DFA transitions: every state needs one destination per alphabet symbol."
     }
 };
@@ -228,20 +203,13 @@ function selectMode(mode) {
     document.getElementById("tab_" + mode).classList.add("active");
     document.getElementById("outputBox").style.display = "none";
 
-    if (mode === "regex_enfa") {
-        document.getElementById("automataForm").style.display = "none";
-        document.getElementById("regexForm").style.display = "grid";
-    } else {
-        document.getElementById("automataForm").style.display = "grid";
-        document.getElementById("regexForm").style.display = "none";
-        const p = PRESETS[mode];
-        document.getElementById("states").value = p.states;
-        document.getElementById("alphabet").value = p.alphabet;
-        document.getElementById("startState").value = p.start;
-        document.getElementById("finalStates").value = p.final;
-        document.getElementById("transitions").value = p.trans;
-        document.getElementById("transHelp").textContent = p.help;
-    }
+    const p = PRESETS[mode];
+    document.getElementById("states").value = p.states;
+    document.getElementById("alphabet").value = p.alphabet;
+    document.getElementById("startState").value = p.start;
+    document.getElementById("finalStates").value = p.final;
+    document.getElementById("transitions").value = p.trans;
+    document.getElementById("transHelp").textContent = p.help;
 }
 
 const parseList = v => v.split(",").map(x => x.trim()).filter(Boolean);
@@ -254,47 +222,61 @@ async function runConversion() {
     out.innerHTML = "⏳ Computing conversion...";
 
     try {
-        let endpoint = "";
-        let payload = {};
+        const states = parseList(document.getElementById("states").value);
+        const alphabet = parseList(document.getElementById("alphabet").value);
+        const start_state = document.getElementById("startState").value.trim();
+        const final_states = parseList(document.getElementById("finalStates").value);
 
-        if (currentMode === "regex_enfa") {
-            endpoint = "/convert/regex-to-enfa";
-            payload = { regex: document.getElementById("regexInput").value.trim() };
-        } else {
-            const states = parseList(document.getElementById("states").value);
-            const alphabet = parseList(document.getElementById("alphabet").value);
-            const start_state = document.getElementById("startState").value.trim();
-            const final_states = parseList(document.getElementById("finalStates").value);
-            const transitions = {};
-            states.forEach(s => transitions[s] = {});
+        if (!states.length) throw new Error("Please enter at least one state.");
+        if (!alphabet.length) throw new Error("Please enter at least one alphabet symbol.");
+        if (!start_state || !states.includes(start_state)) throw new Error(`Start state "${start_state}" must belong to states.`);
+        if (!final_states.length) throw new Error("Please enter at least one final state.");
 
-            const lines = document.getElementById("transitions").value.split("\n").map(l => l.trim()).filter(Boolean);
-            for (const line of lines) {
-                const parts = line.split(",").map(x => x.trim());
-                if (parts.length !== 3) throw new Error(`Invalid transition: ${line}`);
-                const [st, rawSym, dstText] = parts;
-                const sym = (currentMode === "enfa_nfa" && rawSym.toLowerCase() === "e") ? "ε" : rawSym;
+        const transitions = {};
+        states.forEach(s => transitions[s] = {});
 
-                if (currentMode === "min_dfa") {
-                    transitions[st][sym] = dstText;
-                } else {
-                    const dests = dstText ? dstText.split("|").map(d => d.trim()).filter(Boolean) : [];
-                    transitions[st][sym] = (transitions[st][sym] || []).concat(dests);
+        const isEnfaMode = (currentMode === "enfa_nfa" || currentMode === "enfa_dfa");
+        const lines = document.getElementById("transitions").value.split("\n").map(l => l.trim()).filter(Boolean);
+
+        for (const line of lines) {
+            const parts = line.split(",").map(x => x.trim());
+            if (parts.length !== 3) throw new Error(`Invalid transition "${line}". Use state,symbol,destination.`);
+            const [st, rawSym, dstText] = parts;
+            if (!states.includes(st)) throw new Error(`Unknown state "${st}".`);
+
+            const sym = (isEnfaMode && rawSym.toLowerCase() === "e") ? "ε" : rawSym;
+            if (sym !== "ε" && !alphabet.includes(sym)) throw new Error(`Unknown alphabet symbol "${sym}".`);
+            if (!isEnfaMode && sym === "ε") throw new Error("ε transitions are only allowed in ε-NFA modes.");
+
+            if (currentMode === "min_dfa") {
+                if (!dstText || dstText.includes("|")) throw new Error(`DFA transition δ(${st}, ${sym}) must have one destination.`);
+                if (!states.includes(dstText)) throw new Error(`Unknown destination "${dstText}".`);
+                transitions[st][sym] = dstText;
+            } else {
+                const dests = dstText ? dstText.split("|").map(d => d.trim()).filter(Boolean) : [];
+                for (const d of dests) {
+                    if (!states.includes(d)) throw new Error(`Unknown destination "${d}".`);
                 }
+                transitions[st][sym] = (transitions[st][sym] || []).concat(dests);
             }
-
-            if (currentMode !== "min_dfa") {
-                states.forEach(s => {
-                    alphabet.forEach(a => transitions[s][a] ??= []);
-                    if (currentMode === "enfa_nfa") transitions[s]["ε"] ??= [];
-                });
-            }
-
-            payload = { states, alphabet, transitions, start_state, final_states, input: "" };
-            endpoint = currentMode === "nfa_dfa" ? "/convert/nfa-to-dfa"
-                     : currentMode === "enfa_nfa" ? "/convert/enfa-to-nfa"
-                     : "/convert/minimize-dfa";
         }
+
+        if (currentMode === "min_dfa") {
+            states.forEach(s => alphabet.forEach(a => {
+                if (!(a in transitions[s])) throw new Error(`Missing transition: δ(${s}, ${a})`);
+            }));
+        } else {
+            states.forEach(s => {
+                alphabet.forEach(a => transitions[s][a] ??= []);
+                if (isEnfaMode) transitions[s]["ε"] ??= [];
+            });
+        }
+
+        const payload = { states, alphabet, transitions, start_state, final_states, input: "" };
+        const endpoint = currentMode === "nfa_dfa" ? "/convert/nfa-to-dfa"
+                       : currentMode === "enfa_nfa" ? "/convert/enfa-to-nfa"
+                       : currentMode === "enfa_dfa" ? "/convert/enfa-to-dfa"
+                       : "/convert/minimize-dfa";
 
         const resp = await fetch(`${BACKEND_URL}${endpoint}`, {
             method: "POST",
@@ -302,7 +284,7 @@ async function runConversion() {
             body: JSON.stringify(payload)
         });
         const data = await resp.json();
-        if (!resp.ok) throw new Error(data.detail || "Conversion failed.");
+        if (!resp.ok) throw new Error(data.detail ? JSON.stringify(data.detail) : "Conversion failed.");
 
         renderConversionOutput(data);
     } catch (err) {
@@ -313,7 +295,7 @@ async function runConversion() {
 
 function renderConversionOutput(data) {
     const out = document.getElementById("outputBox");
-    const syms = currentMode === "regex_enfa" ? ["ε", ...data.alphabet] : data.alphabet;
+    const syms = data.alphabet;
 
     let tableHtml = `<table><thead><tr><th>State</th>${syms.map(s => `<th>${esc(s)}</th>`).join("")}</tr></thead><tbody>`;
     data.states.forEach(st => {
@@ -322,7 +304,7 @@ function renderConversionOutput(data) {
         tableHtml += `<tr><td><strong>${esc(isStart + st + isFinal)}</strong></td>`;
         syms.forEach(sym => {
             const val = data.transitions[st]?.[sym];
-            const cell = Array.isArray(val) ? (val.length ? `{${val.join(", ")}}` : "∅") : esc(val || "—");
+            const cell = Array.isArray(val) ? (val.length ? `{${val.join(", ")}}` : "∅") : (val || "—");
             tableHtml += `<td>${esc(cell)}</td>`;
         });
         tableHtml += "</tr>";
@@ -344,9 +326,13 @@ function renderConversionOutput(data) {
         ).join("");
     }
     if (data.steps && Array.isArray(data.steps)) {
-        extraHtml += `<h4>Construction Steps</h4>` + data.steps.map((s, idx) => {
-            if (typeof s === "string") return `<div class="step-item">${idx + 1}. ${esc(s)}</div>`;
-            if (s.from_subset) return `<div class="step-item">δ(${esc(s.from_subset)}, ${esc(s.symbol)}) = <strong>${esc(s.to_subset)}</strong></div>`;
+        extraHtml += `<h4>Construction Steps</h4>` + data.steps.map(s => {
+            if (s.move_states !== undefined) {
+                return `<div class="step-item">δ_DFA(${esc(s.from_subset)}, ${esc(s.symbol)}) = ε-closure({${s.move_states.map(esc).join(",")}}) = <strong>${esc(s.to_subset)}</strong></div>`;
+            }
+            if (s.from_subset) {
+                return `<div class="step-item">δ_DFA(${esc(s.from_subset)}, ${esc(s.symbol)}) = <strong>${esc(s.to_subset)}</strong></div>`;
+            }
             return `<div class="step-item">State ${esc(s.state)}, symbol '${esc(s.symbol)}': ε-closure(${esc(s.state)})=[${s.epsilon_closure.join(",")}] → move=[${s.move_targets.join(",")}] → <strong>[${s.result_states.join(",")}]</strong></div>`;
         }).join("");
     }
@@ -356,8 +342,113 @@ function renderConversionOutput(data) {
         <p><strong>Resulting States (Q):</strong> ${data.states.map(esc).join(", ")}</p>
         <p><strong>Start State (q₀):</strong> ${esc(data.start_state)} &nbsp;|&nbsp; <strong>Final States (F):</strong> ${data.final_states.map(esc).join(", ") || "∅"}</p>
         ${tableHtml}
+        <h4 style="color:#2dd4bf;margin-bottom:8px;">Resulting State Diagram</h4>
+        <div id="convDiagram" class="diagram-wrap"></div>
         ${extraHtml}
     `;
+
+    drawResultDiagram(data.states, data.transitions, data.start_state, data.final_states);
+}
+
+function drawResultDiagram(states, transitions, startState, finalStates) {
+    const container = document.getElementById("convDiagram");
+    const NS = "http://www.w3.org/2000/svg";
+    const mk = (tag, attrs = {}) => {
+        const el = document.createElementNS(NS, tag);
+        Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+        return el;
+    };
+
+    const svg = mk("svg", { viewBox: "0 0 1000 390" });
+    const defs = mk("defs");
+    const marker = mk("marker", { id: "convArr", markerWidth: "10", markerHeight: "10", refX: "9", refY: "3", orient: "auto", markerUnits: "strokeWidth" });
+    marker.appendChild(mk("path", { d: "M0,0 L0,6 L9,3 z", fill: "#94a3b8" }));
+    defs.appendChild(marker);
+    svg.appendChild(defs);
+
+    const pos = {};
+    const cx = 500, cy = 195;
+    const radius = Math.min(300, 105 + states.length * 28);
+    states.forEach((st, i) => {
+        const angle = -Math.PI / 2 + (2 * Math.PI * i) / states.length;
+        pos[st] = { x: cx + radius * Math.cos(angle), y: cy + radius * 0.58 * Math.sin(angle) };
+    });
+
+    const grouped = {};
+    states.forEach(src => {
+        Object.entries(transitions[src] || {}).forEach(([sym, dstVal]) => {
+            const dsts = Array.isArray(dstVal) ? dstVal : (dstVal ? [dstVal] : []);
+            dsts.forEach(dst => {
+                const key = `${src}__${dst}`;
+                if (!grouped[key]) grouped[key] = { from: src, to: dst, syms: [] };
+                grouped[key].syms.push(sym);
+            });
+        });
+    });
+
+    Object.values(grouped).forEach(e => {
+        const a = pos[e.from], b = pos[e.to];
+        if (!a || !b) return;
+        const lbl = e.syms.join(",");
+        if (e.from === e.to) {
+            svg.appendChild(mk("path", {
+                d: `M ${a.x - 25} ${a.y - 30} C ${a.x - 85} ${a.y - 105}, ${a.x + 85} ${a.y - 105}, ${a.x + 25} ${a.y - 30}`,
+                fill: "none", stroke: "#94a3b8", "stroke-width": "2", "marker-end": "url(#convArr)"
+            }));
+            const t = mk("text", { x: a.x, y: a.y - 78, fill: "#f8fafc", "font-size": "13", "font-weight": "bold", "text-anchor": "middle" });
+            t.textContent = lbl;
+            svg.appendChild(t);
+            return;
+        }
+        const ang = Math.atan2(b.y - a.y, b.x - a.x);
+        const sx = a.x + Math.cos(ang) * 40, sy = a.y + Math.sin(ang) * 40;
+        const ex = b.x - Math.cos(ang) * 40, ey = b.y - Math.sin(ang) * 40;
+        const rev = Boolean(grouped[`${e.to}__${e.from}`]);
+
+        if (rev) {
+            const dx = ex - sx, dy = ey - sy, len = Math.hypot(dx, dy) || 1;
+            const nx = -dy / len, ny = dx / len;
+            const ctrlX = (sx + ex) / 2 + nx * 34, ctrlY = (sy + ey) / 2 + ny * 34;
+            svg.appendChild(mk("path", {
+                d: `M ${sx} ${sy} Q ${ctrlX} ${ctrlY} ${ex} ${ey}`,
+                fill: "none", stroke: "#94a3b8", "stroke-width": "2", "marker-end": "url(#convArr)"
+            }));
+            const t = mk("text", {
+                x: 0.25 * sx + 0.5 * ctrlX + 0.25 * ex + nx * 10,
+                y: 0.25 * sy + 0.5 * ctrlY + 0.25 * ey + ny * 10,
+                fill: "#f8fafc", "font-size": "13", "font-weight": "bold", "text-anchor": "middle"
+            });
+            t.textContent = lbl;
+            svg.appendChild(t);
+        } else {
+            svg.appendChild(mk("line", { x1: sx, y1: sy, x2: ex, y2: ey, stroke: "#94a3b8", "stroke-width": "2", "marker-end": "url(#convArr)" }));
+            const t = mk("text", { x: (sx + ex) / 2, y: (sy + ey) / 2 - 8, fill: "#f8fafc", "font-size": "13", "font-weight": "bold", "text-anchor": "middle" });
+            t.textContent = lbl;
+            svg.appendChild(t);
+        }
+    });
+
+    if (pos[startState]) {
+        const p = pos[startState];
+        svg.appendChild(mk("line", { x1: p.x - 75, y1: p.y, x2: p.x - 42, y2: p.y, stroke: "#2dd4bf", "stroke-width": "2.5", "marker-end": "url(#convArr)" }));
+        const stTxt = mk("text", { x: p.x - 74, y: p.y - 10, fill: "#2dd4bf", "font-size": "13", "text-anchor": "middle" });
+        stTxt.textContent = "start";
+        svg.appendChild(stTxt);
+    }
+
+    states.forEach(st => {
+        const p = pos[st];
+        const isF = finalStates.includes(st);
+        svg.appendChild(mk("circle", { cx: p.x, cy: p.y, r: "38", fill: "#020617", stroke: isF ? "#22c55e" : "#2dd4bf", "stroke-width": "3" }));
+        if (isF) {
+            svg.appendChild(mk("circle", { cx: p.x, cy: p.y, r: "31", fill: "none", stroke: "#22c55e", "stroke-width": "2" }));
+        }
+        const label = mk("text", { x: p.x, y: p.y + 5, fill: "#f8fafc", "font-size": st.length > 6 ? "11" : "14", "font-weight": "bold", "text-anchor": "middle" });
+        label.textContent = st;
+        svg.appendChild(label);
+    });
+
+    container.appendChild(svg);
 }
 </script>
 </body>

@@ -1,25 +1,15 @@
-# AI-TOC Simulator v2.0
+# AI-TOC Simulator v2.1
 
-Full-featured, Vercel-ready Theory of Computation interactive learning platform.
+Interactive Theory of Computation learning platform ready for Vercel deployment.
 
-## Included Modules
+## Modules
 
-### Finite Automata (with Interactive Step-by-Step Graph Highlighting)
-- `frontend/dfa.html` — Deterministic Finite Automaton simulator
-- `frontend/nfa.html` — Non-Deterministic Finite Automaton simulator
-- `frontend/enfa.html` — Epsilon-NFA simulator with ε-closure computation
-
-### Automata Conversions & Minimization (`backend/toc_engine/conversions.py` + `frontend/conversions.html`)
-- **NFA → DFA** (Subset Construction)
-- **ε-NFA → NFA** (ε-closure elimination)
-- **DFA State Minimization** (Unreachable state pruning + Partition Refinement)
-- **Regex → ε-NFA** (Thompson's Construction)
-
-### Advanced Computation Models (`backend/toc_engine/pda_tm.py`)
-- `frontend/pda.html` — Pushdown Automaton (PDA) with live stack frame tracing
-- `frontend/tm.html` — Single-Tape Turing Machine with interactive tape head stepping
-
-### Google Gemini AI Integration (`backend/ai/gemini_helper.py` + `frontend/ai-assistant.html`)
-- Natural-language to DFA/NFA/ε-NFA generator (`/api/ai/generate`)
-- Step-by-step simulation explainer (`/api/ai/explain`)
-- Set `GEMINI_API_KEY` in **Vercel Project Settings → Environment Variables** to enable live AI generation.
+- **DFA Simulator** (`frontend/dfa.html` + `/api/dfa/simulate`) — Interactive step-by-step graph highlighting
+- **NFA Simulator** (`frontend/nfa.html` + `/api/nfa/simulate`) — Nondeterministic state set playback
+- **ε-NFA Simulator** (`frontend/enfa.html` + `/api/enfa/simulate`) — Epsilon-closure and transition visualization
+- **Automata Conversions & Minimization** (`frontend/conversions.html` + `backend/toc_engine/conversions.py`):
+  - **NFA → DFA** (`/api/convert/nfa-to-dfa`)
+  - **ε-NFA → NFA** (`/api/convert/enfa-to-nfa`)
+  - **ε-NFA → DFA** (`/api/convert/enfa-to-dfa`)
+  - **DFA State Minimization** (`/api/convert/minimize-dfa`)
+- **Gemini AI Studio** (`frontend/ai-assistant.html` + `/api/ai/generate`, `/api/ai/explain`)

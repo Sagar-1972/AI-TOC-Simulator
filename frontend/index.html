@@ -13,114 +13,50 @@
             background: radial-gradient(circle at top, #1e3a8a 0%, #0f172a 45%, #020617 100%);
             color: #f8fafc;
         }
-        header {
-            text-align: center;
-            padding: 50px 20px 20px;
-        }
+        header { text-align: center; padding: 50px 20px 20px; }
         header h1 {
             margin: 0;
             font-size: 42px;
             font-weight: 800;
-            background: linear-gradient(90deg, #60a5fa, #a78bfa, #fb923c, #34d399);
+            background: linear-gradient(90deg, #60a5fa, #a78bfa, #fb923c, #2dd4bf);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        header p {
-            margin-top: 12px;
-            color: #cbd5e1;
-            font-size: 17px;
-        }
+        header p { margin-top: 12px; color: #cbd5e1; font-size: 17px; }
         .menu {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin: 15px auto 40px;
-            width: fit-content;
-            max-width: 95%;
-            padding: 8px;
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid #334155;
-            border-radius: 50px;
-            backdrop-filter: blur(10px);
+            display: flex; justify-content: center; align-items: center; flex-wrap: wrap;
+            gap: 8px; margin: 15px auto 40px; width: fit-content; max-width: 95%;
+            padding: 8px; background: rgba(15, 23, 42, 0.85); border: 1px solid #334155;
+            border-radius: 50px; backdrop-filter: blur(10px);
         }
         .menu a {
-            text-decoration: none;
-            color: #cbd5e1;
-            padding: 10px 16px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 14px;
-            transition: 0.25s;
+            text-decoration: none; color: #cbd5e1; padding: 10px 18px;
+            border-radius: 30px; font-weight: 600; font-size: 14px; transition: 0.25s;
         }
-        .menu a:hover {
-            background: #1e293b;
-            color: white;
-            transform: translateY(-2px);
-        }
-        .menu .active {
-            background: #2563eb;
-            color: white;
-            box-shadow: 0 5px 18px rgba(37, 99, 235, 0.35);
-        }
-        .container {
-            width: min(1180px, 92%);
-            margin: auto;
-            padding-bottom: 60px;
-        }
-        .hero {
-            text-align: center;
-            max-width: 850px;
-            margin: 0 auto 40px;
-        }
+        .menu a:hover { background: #1e293b; color: white; transform: translateY(-2px); }
+        .menu .active { background: #2563eb; color: white; box-shadow: 0 5px 18px rgba(37, 99, 235, 0.35); }
+        .container { width: min(1150px, 92%); margin: auto; padding-bottom: 60px; }
+        .hero { text-align: center; max-width: 850px; margin: 0 auto 40px; }
         .hero h2 { font-size: 31px; margin-bottom: 14px; }
         .hero p { color: #94a3b8; line-height: 1.7; font-size: 16px; }
         .section-label {
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            color: #94a3b8;
-            margin: 32px 0 14px;
-            font-weight: 700;
+            font-size: 13px; text-transform: uppercase; letter-spacing: 1.2px;
+            color: #94a3b8; margin: 32px 0 14px; font-weight: 700;
         }
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
-        .cards.four {
-            grid-template-columns: repeat(4, 1fr);
-        }
+        .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+        .cards.two { grid-template-columns: repeat(2, 1fr); }
         .card {
-            position: relative;
-            background: rgba(15, 23, 42, 0.88);
-            border: 1px solid #334155;
-            border-radius: 18px;
-            padding: 26px 22px;
-            text-align: center;
-            transition: 0.3s;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            background: rgba(15, 23, 42, 0.88); border: 1px solid #334155;
+            border-radius: 18px; padding: 28px 24px; text-align: center;
+            transition: 0.3s; display: flex; flex-direction: column; justify-content: space-between;
         }
-        .card:hover {
-            transform: translateY(-6px);
-            border-color: #64748b;
-            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
-        }
-        .icon { font-size: 42px; margin-bottom: 12px; }
-        .card h3 { font-size: 22px; margin: 6px 0 10px; }
-        .card p { color: #94a3b8; line-height: 1.55; font-size: 14px; margin: 0 0 16px; }
+        .card:hover { transform: translateY(-6px); border-color: #64748b; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35); }
+        .icon { font-size: 44px; margin-bottom: 12px; }
+        .card h3 { font-size: 23px; margin: 6px 0 10px; }
+        .card p { color: #94a3b8; line-height: 1.6; font-size: 14px; margin: 0 0 18px; }
         .card a {
-            display: inline-block;
-            padding: 10px 20px;
-            border-radius: 9px;
-            text-decoration: none;
-            color: white;
-            font-weight: bold;
-            font-size: 14px;
-            transition: 0.2s;
+            display: inline-block; padding: 11px 22px; border-radius: 9px;
+            text-decoration: none; color: white; font-weight: bold; font-size: 14px; transition: 0.2s;
         }
         .dfa { border-top: 4px solid #60a5fa; }
         .dfa h3 { color: #60a5fa; }
@@ -142,34 +78,13 @@
         .conv a { background: #0d9488; }
         .conv a:hover { background: #0f766e; }
 
-        .pda { border-top: 4px solid #f472b6; }
-        .pda h3 { color: #f472b6; }
-        .pda a { background: #db2777; }
-        .pda a:hover { background: #be185d; }
-
-        .tm { border-top: 4px solid #34d399; }
-        .tm h3 { color: #34d399; }
-        .tm a { background: #059669; }
-        .tm a:hover { background: #047857; }
-
         .ai { border-top: 4px solid #facc15; }
         .ai h3 { color: #facc15; }
         .ai a { background: #ca8a04; }
         .ai a:hover { background: #a16207; }
 
-        footer {
-            text-align: center;
-            padding: 25px;
-            color: #64748b;
-            border-top: 1px solid #1e293b;
-        }
-        @media (max-width: 1000px) {
-            .cards, .cards.four { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media (max-width: 650px) {
-            header h1 { font-size: 31px; }
-            .cards, .cards.four { grid-template-columns: 1fr; }
-        }
+        footer { text-align: center; padding: 25px; color: #64748b; border-top: 1px solid #1e293b; }
+        @media (max-width: 900px) { .cards, .cards.two { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -184,17 +99,15 @@
     <a href="nfa.html" >🟣 NFA</a>
     <a href="enfa.html" >🟠 ε-NFA</a>
     <a href="conversions.html" >🔄 Conversions</a>
-    <a href="pda.html" >📚 PDA</a>
-    <a href="tm.html" >🎞️ Turing Machine</a>
     <a href="ai-assistant.html" >✨ AI Studio</a>
 </nav>
 <main class="container">
     <section class="hero">
         <h2>Learn Theory of Computation Interactively</h2>
-        <p>Build automata, step through live state transitions on interactive diagrams, convert between formal models, simulate Pushdown Automata and Turing Machines, and generate machines with Gemini AI.</p>
+        <p>Build automata, step through live state transitions on interactive diagrams, convert and minimize finite automata, and generate models with Gemini AI.</p>
     </section>
 
-    <div class="section-label">Finite Automata (Interactive Step-by-Step Graph Highlighting)</div>
+    <div class="section-label">Finite Automata Simulators (Interactive Step-by-Step Graph Highlighting)</div>
     <section class="cards">
         <div class="card dfa">
             <div>
@@ -222,44 +135,26 @@
         </div>
     </section>
 
-    <div class="section-label">Conversions, Advanced Automata & AI Studio</div>
-    <section class="cards four">
+    <div class="section-label">Conversions, Minimization & Gemini AI Studio</div>
+    <section class="cards two">
         <div class="card conv">
             <div>
                 <div class="icon">🔄</div>
-                <h3>TOC Conversions</h3>
-                <p>Convert ε-NFA → NFA, NFA → DFA (Subset Construction), Minimize DFA states, and compile Regex → ε-NFA.</p>
+                <h3>Automata Conversions & Minimization</h3>
+                <p>Convert ε-NFA → NFA, NFA → DFA, ε-NFA → DFA (Subset Construction), and Minimize DFA states with interactive diagrams.</p>
             </div>
             <a href="conversions.html">Open Conversions →</a>
-        </div>
-        <div class="card pda">
-            <div>
-                <div class="icon">📚</div>
-                <h3>PDA Simulator</h3>
-                <p>Simulate Pushdown Automata for context-free languages with live stack frames and acceptance modes.</p>
-            </div>
-            <a href="pda.html">Open PDA →</a>
-        </div>
-        <div class="card tm">
-            <div>
-                <div class="icon">🎞️</div>
-                <h3>Turing Machine</h3>
-                <p>Execute single-tape Turing Machines with interactive tape cells, read/write head tracking, and step controls.</p>
-            </div>
-            <a href="tm.html">Open TM →</a>
         </div>
         <div class="card ai">
             <div>
                 <div class="icon">✨</div>
                 <h3>Gemini AI Studio</h3>
-                <p>Describe any formal language in English to auto-generate valid DFA/NFA/ε-NFA definitions and explanations.</p>
+                <p>Describe any formal language in English to auto-generate valid DFA/NFA/ε-NFA definitions and step-by-step explanations.</p>
             </div>
             <a href="ai-assistant.html">Open AI Studio →</a>
         </div>
     </section>
 </main>
-<footer>
-    AI-TOC Simulator — Theory of Computation Learning Platform
-</footer>
+<footer>AI-TOC Simulator — Theory of Computation Learning Platform</footer>
 </body>
 </html>
