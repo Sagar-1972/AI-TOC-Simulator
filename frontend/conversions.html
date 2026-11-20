@@ -6,86 +6,311 @@
     <title>TOC Conversions & Minimization | AI-TOC Simulator</title>
     <style>
         * { box-sizing: border-box; }
-        body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #0f172a; color: #e2e8f0; }
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+        }
         header {
             background: linear-gradient(135deg, #111827, #115e59);
-            padding: 32px 20px 20px; text-align: center; border-bottom: 1px solid #334155;
+            padding: 32px 20px 20px;
+            text-align: center;
+            border-bottom: 1px solid #334155;
         }
         header h1 { margin: 0 0 8px; font-size: 32px; }
         header p { margin: 0; color: #cbd5e1; }
         .menu {
-            display: flex; justify-content: center; align-items: center; flex-wrap: wrap;
-            gap: 8px; width: fit-content; max-width: 95%; margin: 18px auto 25px;
-            padding: 7px; background: #111827; border: 1px solid #334155; border-radius: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            width: fit-content;
+            max-width: 95%;
+            margin: 18px auto 25px;
+            padding: 7px;
+            background: #111827;
+            border: 1px solid #334155;
+            border-radius: 50px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.25);
         }
         .menu a {
-            text-decoration: none; color: #cbd5e1; padding: 10px 18px;
-            border-radius: 30px; font-weight: 600; font-size: 14px; transition: 0.2s;
+            text-decoration: none;
+            color: #cbd5e1;
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.2s;
         }
         .menu a:hover { background: #1e293b; color: white; }
-        .menu .active { background: #0d9488; color: white; box-shadow: 0 5px 15px rgba(13,148,136,0.35); }
+        .menu .active {
+            background: #0d9488;
+            color: white;
+            box-shadow: 0 5px 15px rgba(13,148,136,0.35);
+        }
         .container { width: min(1150px, 94%); margin: 0 auto 50px; }
         .page-title { text-align: center; margin: 22px 0; }
         .page-title h2 { color: #2dd4bf; font-size: 30px; margin-bottom: 8px; }
         .page-title p { color: #94a3b8; }
         .tabs {
-            display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; justify-content: center;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+            justify-content: center;
         }
         .tab-btn {
-            background: #111827; border: 1px solid #334155; color: #cbd5e1;
-            padding: 11px 18px; border-radius: 10px; font-weight: 700; cursor: pointer;
-            font-size: 14px; transition: 0.2s;
+            background: #111827;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            padding: 11px 18px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
         }
         .tab-btn:hover { border-color: #2dd4bf; color: white; }
         .tab-btn.active { background: #0d9488; border-color: #0d9488; color: white; }
         .card {
-            background: #111827; border: 1px solid #334155; border-radius: 16px;
-            padding: 24px; box-shadow: 0 12px 30px rgba(0,0,0,0.22);
+            background: #111827;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.22);
         }
         .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
         .full { grid-column: 1 / -1; }
         label { display: block; margin-bottom: 7px; font-weight: bold; color: #cbd5e1; }
         input, textarea {
-            width: 100%; border: 1px solid #475569; border-radius: 9px; padding: 11px 12px;
-            background: #0f172a; color: #f8fafc; outline: none; font-size: 14px;
+            width: 100%;
+            border: 1px solid #475569;
+            border-radius: 9px;
+            padding: 11px 12px;
+            background: #0f172a;
+            color: #f8fafc;
+            outline: none;
+            font-size: 14px;
         }
         input:focus, textarea:focus { border-color: #2dd4bf; }
         textarea { min-height: 185px; resize: vertical; font-family: Consolas, monospace; }
         .help { color: #94a3b8; font-size: 12px; margin-top: 6px; line-height: 1.5; }
         button.run-btn {
-            width: 100%; border: none; border-radius: 10px; padding: 13px 16px;
-            font-size: 16px; font-weight: bold; cursor: pointer; color: white;
-            background: #0d9488; transition: 0.2s;
+            width: 100%;
+            border: none;
+            border-radius: 10px;
+            padding: 13px 16px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            background: #0d9488;
+            transition: 0.2s;
         }
         button.run-btn:hover { background: #0f766e; transform: translateY(-1px); }
         .output-box {
-            margin-top: 22px; background: #020617; border: 1px solid #334155;
-            border-radius: 12px; padding: 20px; display: none;
+            margin-top: 22px;
+            background: #020617;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            display: none;
         }
         .output-box h3 { color: #2dd4bf; margin-top: 0; }
         table {
-            width: 100%; border-collapse: collapse; margin: 14px 0; font-family: Consolas, monospace; font-size: 14px;
+            width: 100%;
+            border-collapse: collapse;
+            margin: 14px 0;
+            font-family: Consolas, monospace;
+            font-size: 14px;
         }
         th, td { border: 1px solid #334155; padding: 10px; text-align: center; }
         th { background: #134e4a; color: #f0fdfa; }
         td { background: #0f172a; }
         .badge {
-            display: inline-block; padding: 4px 10px; border-radius: 6px;
-            background: #134e4a; color: #5eead4; font-family: Consolas, monospace; font-size: 13px; margin: 3px;
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: #134e4a;
+            color: #5eead4;
+            font-family: Consolas, monospace;
+            font-size: 13px;
+            margin: 3px;
         }
         .step-item {
-            padding: 9px 12px; background: #0f172a; border: 1px solid #1e293b;
-            border-radius: 8px; margin-top: 7px; font-family: Consolas, monospace; font-size: 13px;
+            padding: 9px 12px;
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            margin-top: 7px;
+            font-family: Consolas, monospace;
+            font-size: 13px;
         }
-        .diagram-wrap {
-            margin-top: 18px; background: #0f172a; border: 1px solid #334155;
-            border-radius: 12px; padding: 12px; overflow: auto;
-        }
-        .diagram-wrap svg { display: block; width: 100%; min-width: 760px; height: 390px; }
         .err { background: #451a03; border-color: #f97316; color: #fed7aa; }
+
+        /* =========================
+           INTERACTIVE DIAGRAM CARD
+           (Matches DFA / NFA / ε-NFA)
+        ========================= */
+        .diagram-card {
+            margin-top: 22px;
+            display: none;
+        }
+        .diagram-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        .diagram-header h3 { color: #2dd4bf; margin: 0; }
+        .step-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .step-controls button {
+            border: none;
+            border-radius: 8px;
+            padding: 7px 13px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            background: #0d9488;
+            transition: 0.2s;
+        }
+        .step-controls button:hover { background: #0f766e; }
+        .step-controls button.secondary {
+            background: #1e293b;
+            border: 1px solid #475569;
+        }
+        .step-controls button.secondary:hover { background: #334155; }
+        .step-badge {
+            background: #0f172a;
+            border: 1px solid #334155;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-family: Consolas, monospace;
+            font-size: 13px;
+            color: #facc15;
+        }
+        .sim-bar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 14px;
+        }
+        .sim-bar label {
+            margin: 0;
+            font-size: 13px;
+            color: #cbd5e1;
+            white-space: nowrap;
+        }
+        .sim-bar input {
+            flex: 1;
+            min-width: 180px;
+            padding: 9px 12px;
+        }
+        .sim-bar button {
+            border: none;
+            border-radius: 8px;
+            padding: 9px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            background: #0d9488;
+            white-space: nowrap;
+        }
+        .sim-bar button:hover { background: #0f766e; }
+        .sim-status {
+            margin-bottom: 14px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            display: none;
+        }
+        .sim-status.accepted { background: #052e16; border: 1px solid #22c55e; }
+        .sim-status.rejected { background: #450a0a; border: 1px solid #ef4444; }
+        .sim-status.error { background: #451a03; border: 1px solid #f97316; }
+        .exec-steps {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .exec-row {
+            display: grid;
+            grid-template-columns: 80px 100px 1fr;
+            gap: 10px;
+            align-items: center;
+            padding: 8px 12px;
+            background: #020617;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            font-family: Consolas, monospace;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .exec-row:hover { border-color: #475569; }
+        .exec-row.active-step {
+            border-color: #facc15;
+            background: rgba(250, 204, 21, 0.12);
+        }
+        .diagram {
+            width: 100%;
+            min-height: 430px;
+            background: #020617;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            overflow: auto;
+            padding: 10px;
+        }
+        .diagram svg {
+            display: block;
+            width: 100%;
+            min-width: 760px;
+            height: 400px;
+        }
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin-top: 12px;
+            color: #94a3b8;
+            font-size: 13px;
+        }
+        .legend span { display: inline-flex; align-items: center; gap: 7px; }
+        .dot {
+            width: 12px;
+            height: 12px;
+            display: inline-block;
+            border-radius: 50%;
+            border: 2px solid #2dd4bf;
+        }
+        .dot.final { border-color: #22c55e; }
+        .dot.start { background: #2dd4bf; }
+        .dot.active-node {
+            background: #facc15;
+            border-color: #facc15;
+            box-shadow: 0 0 8px #facc15;
+        }
+
         footer { text-align: center; padding: 25px; color: #64748b; border-top: 1px solid #1e293b; }
-        @media (max-width: 750px) { .form-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 750px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .exec-row { grid-template-columns: 60px 75px 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -95,17 +320,18 @@
 </header>
 
 <nav class="menu">
-    <a href="index.html" >🏠 Home</a>
-    <a href="dfa.html" >🔵 DFA</a>
-    <a href="nfa.html" >🟣 NFA</a>
-    <a href="enfa.html" >🟠 ε-NFA</a>
+    <a href="index.html">🏠 Home</a>
+    <a href="dfa.html">🔵 DFA</a>
+    <a href="nfa.html">🟣 NFA</a>
+    <a href="enfa.html">🟠 ε-NFA</a>
     <a href="conversions.html" class="active">🔄 Conversions</a>
-    <a href="ai-assistant.html" >✨ AI Studio</a>
+    <a href="ai-assistant.html">✨ AI Studio</a>
 </nav>
+
 <main class="container">
     <section class="page-title">
         <h2>🔄 Automata Conversions & Minimization</h2>
-        <p>Convert between ε-NFA, NFA, and DFA or minimize DFA states with transition tables and diagrams</p>
+        <p>Convert between ε-NFA, NFA, and DFA or minimize DFA states — then test & step through the resulting state diagram</p>
     </section>
 
     <div class="tabs">
@@ -146,10 +372,43 @@ q2,1,</textarea>
         </div>
 
         <div style="margin-top:16px;">
-            <button class="run-btn" onclick="runConversion()">▶ Convert & Build Transition Table</button>
+            <button class="run-btn" onclick="runConversion()">▶ Convert & Build Interactive State Diagram</button>
         </div>
 
         <div id="outputBox" class="output-box"></div>
+    </section>
+
+    <!-- =========================
+         INTERACTIVE STATE DIAGRAM
+         (Matches DFA / NFA / ε-NFA)
+    ========================= -->
+    <section id="diagramCard" class="card diagram-card">
+        <div class="diagram-header">
+            <h3 id="diagramTitle">🔄 Converted Interactive State Diagram</h3>
+            <div class="step-controls">
+                <span id="stepIndicator" class="step-badge">Step: Ready</span>
+                <button class="secondary" onclick="prevStep()">◀ Prev</button>
+                <button class="secondary" onclick="nextStep()">Next ▶</button>
+                <button id="playBtn" onclick="toggleAutoPlay()">⏯ Auto-Play</button>
+            </div>
+        </div>
+
+        <div class="sim-bar">
+            <label for="testInput">Test String on Resulting Automaton:</label>
+            <input id="testInput" type="text" value="01" placeholder="Enter input string to trace on diagram...">
+            <button onclick="simulateResultAutomaton()">▶ Trace Input on Diagram</button>
+        </div>
+
+        <div id="simStatus" class="sim-status"></div>
+
+        <div id="diagram" class="diagram"></div>
+
+        <div class="legend">
+            <span><i class="dot start"></i> Start state</span>
+            <span><i class="dot final"></i> Final state</span>
+            <span><i class="dot active-node"></i> Current Active State(s)</span>
+            <span><strong style="color:#facc15;">━━▶</strong> Traversed Transition</span>
+        </div>
     </section>
 </main>
 <footer>AI-TOC Simulator — Automata Conversions & Minimization Module</footer>
@@ -162,12 +421,25 @@ const BACKEND_URL =
 
 let currentMode = "nfa_dfa";
 
+let convState = {
+    resultType: "dfa", // "dfa" or "nfa"
+    states: [],
+    alphabet: [],
+    transitions: {},
+    startState: "",
+    finalStates: [],
+    stepSnapshots: [],
+    currentStep: -1,
+    timer: null
+};
+
 const PRESETS = {
     nfa_dfa: {
         states: "q0,q1,q2",
         alphabet: "0,1",
         start: "q0",
         final: "q2",
+        sampleInput: "01",
         trans: "q0,0,q0|q1\nq0,1,q0\nq1,0,\nq1,1,q2\nq2,0,\nq2,1,",
         help: "NFA transitions: state,symbol,dest1|dest2 (leave destination empty if none)."
     },
@@ -176,6 +448,7 @@ const PRESETS = {
         alphabet: "0,1",
         start: "q0",
         final: "q3",
+        sampleInput: "01",
         trans: "q0,ε,q1\nq0,0,\nq0,1,\nq1,ε,\nq1,0,q2\nq1,1,\nq2,ε,\nq2,0,\nq2,1,q3\nq3,ε,\nq3,0,\nq3,1,",
         help: "ε-NFA transitions: use ε or e for epsilon transitions (e.g., q0,ε,q1)."
     },
@@ -184,6 +457,7 @@ const PRESETS = {
         alphabet: "a,b",
         start: "q0",
         final: "q2",
+        sampleInput: "ab",
         trans: "q0,ε,q1\nq0,a,q0\nq0,b,\nq1,ε,q2\nq1,a,\nq1,b,q1\nq2,ε,\nq2,a,q2\nq2,b,q2",
         help: "ε-NFA transitions: use ε or e for epsilon transitions. Converts directly to DFA using ε-closure."
     },
@@ -192,16 +466,19 @@ const PRESETS = {
         alphabet: "0,1",
         start: "A",
         final: "E",
+        sampleInput: "011",
         trans: "A,0,B\nA,1,C\nB,0,B\nB,1,D\nC,0,B\nC,1,C\nD,0,B\nD,1,E\nE,0,B\nE,1,C",
         help: "Complete DFA transitions: every state needs one destination per alphabet symbol."
     }
 };
 
 function selectMode(mode) {
+    stopAutoPlay();
     currentMode = mode;
     document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
     document.getElementById("tab_" + mode).classList.add("active");
     document.getElementById("outputBox").style.display = "none";
+    document.getElementById("diagramCard").style.display = "none";
 
     const p = PRESETS[mode];
     document.getElementById("states").value = p.states;
@@ -210,12 +487,14 @@ function selectMode(mode) {
     document.getElementById("finalStates").value = p.final;
     document.getElementById("transitions").value = p.trans;
     document.getElementById("transHelp").textContent = p.help;
+    document.getElementById("testInput").value = p.sampleInput;
 }
 
 const parseList = v => v.split(",").map(x => x.trim()).filter(Boolean);
 const esc = v => String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 
 async function runConversion() {
+    stopAutoPlay();
     const out = document.getElementById("outputBox");
     out.style.display = "block";
     out.className = "output-box";
@@ -286,10 +565,34 @@ async function runConversion() {
         const data = await resp.json();
         if (!resp.ok) throw new Error(data.detail ? JSON.stringify(data.detail) : "Conversion failed.");
 
+        convState.resultType = (currentMode === "enfa_nfa") ? "nfa" : "dfa";
+        convState.states = data.states;
+        convState.alphabet = data.alphabet;
+        convState.transitions = data.transitions;
+        convState.startState = data.start_state;
+        convState.finalStates = data.final_states;
+        convState.stepSnapshots = [];
+        convState.currentStep = -1;
+
         renderConversionOutput(data);
+
+        const diagCard = document.getElementById("diagramCard");
+        diagCard.style.display = "block";
+        const titles = {
+            nfa_dfa: "🔵 Resulting DFA Interactive State Diagram",
+            enfa_nfa: "🟣 Resulting NFA Interactive State Diagram",
+            enfa_dfa: "🔵 Resulting DFA Interactive State Diagram",
+            min_dfa: "🔵 Minimized DFA Interactive State Diagram"
+        };
+        document.getElementById("diagramTitle").textContent = titles[currentMode];
+        document.getElementById("stepIndicator").textContent = "Step: Ready";
+        document.getElementById("simStatus").style.display = "none";
+
+        drawGraph(convState.states, convState.transitions, convState.startState, convState.finalStates, [convState.startState], [], "");
     } catch (err) {
         out.className = "output-box err";
         out.innerHTML = `<h3>⚠️ Error</h3><p>${esc(err.message)}</p>`;
+        document.getElementById("diagramCard").style.display = "none";
     }
 }
 
@@ -342,113 +645,306 @@ function renderConversionOutput(data) {
         <p><strong>Resulting States (Q):</strong> ${data.states.map(esc).join(", ")}</p>
         <p><strong>Start State (q₀):</strong> ${esc(data.start_state)} &nbsp;|&nbsp; <strong>Final States (F):</strong> ${data.final_states.map(esc).join(", ") || "∅"}</p>
         ${tableHtml}
-        <h4 style="color:#2dd4bf;margin-bottom:8px;">Resulting State Diagram</h4>
-        <div id="convDiagram" class="diagram-wrap"></div>
         ${extraHtml}
     `;
-
-    drawResultDiagram(data.states, data.transitions, data.start_state, data.final_states);
 }
 
-function drawResultDiagram(states, transitions, startState, finalStates) {
-    const container = document.getElementById("convDiagram");
-    const NS = "http://www.w3.org/2000/svg";
-    const mk = (tag, attrs = {}) => {
-        const el = document.createElementNS(NS, tag);
-        Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
-        return el;
-    };
+/* =========================
+   SIMULATE & STEP-HIGHLIGHT
+   ON RESULTING AUTOMATON
+========================= */
 
-    const svg = mk("svg", { viewBox: "0 0 1000 390" });
-    const defs = mk("defs");
-    const marker = mk("marker", { id: "convArr", markerWidth: "10", markerHeight: "10", refX: "9", refY: "3", orient: "auto", markerUnits: "strokeWidth" });
-    marker.appendChild(mk("path", { d: "M0,0 L0,6 L9,3 z", fill: "#94a3b8" }));
-    defs.appendChild(marker);
-    svg.appendChild(defs);
+async function simulateResultAutomaton() {
+    stopAutoPlay();
+    const statusBox = document.getElementById("simStatus");
+    statusBox.style.display = "block";
+    statusBox.className = "sim-status";
+    statusBox.innerHTML = "⏳ Simulating input string on resulting automaton...";
 
-    const pos = {};
-    const cx = 500, cy = 195;
-    const radius = Math.min(300, 105 + states.length * 28);
-    states.forEach((st, i) => {
-        const angle = -Math.PI / 2 + (2 * Math.PI * i) / states.length;
-        pos[st] = { x: cx + radius * Math.cos(angle), y: cy + radius * 0.58 * Math.sin(angle) };
+    try {
+        const input = document.getElementById("testInput").value.trim();
+        const endpoint = convState.resultType === "dfa" ? "/dfa/simulate" : "/nfa/simulate";
+        const resp = await fetch(`${BACKEND_URL}${endpoint}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                states: convState.states,
+                alphabet: convState.alphabet,
+                transitions: convState.transitions,
+                start_state: convState.startState,
+                final_states: convState.finalStates,
+                input
+            })
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.detail ? JSON.stringify(data.detail) : "Simulation failed.");
+
+        const symbols = Array.from(input || "");
+        const path = data.path || [];
+        convState.stepSnapshots = path.map((item, idx) => {
+            const activeStates = Array.isArray(item) ? item : [item];
+            const prevStates = idx > 0 ? (Array.isArray(path[idx - 1]) ? path[idx - 1] : [path[idx - 1]]) : [];
+            return {
+                activeStates,
+                prevStates,
+                symbol: idx === 0 ? "Start" : (symbols[idx - 1] || "")
+            };
+        });
+
+        statusBox.className = data.accepted ? "sim-status accepted" : "sim-status rejected";
+        const rowsHtml = convState.stepSnapshots.map((snap, idx) => `
+            <div class="exec-row" id="convStepRow_${idx}" onclick="goToStep(${idx})">
+                <div style="color:#94a3b8;font-weight:bold;">Step ${idx}</div>
+                <div style="color:#2dd4bf;font-weight:bold;">${esc(snap.symbol)}</div>
+                <div>[ ${snap.activeStates.map(esc).join(", ") || "∅"} ]</div>
+            </div>
+        `).join("");
+
+        statusBox.innerHTML = `
+            <div style="font-size:18px;font-weight:bold;margin-bottom:6px;">
+                ${data.accepted ? "✅ ACCEPTED" : "❌ REJECTED"} (Input: <code>${esc(input || "ε")}</code>)
+            </div>
+            ${data.reason ? `<div style="margin-bottom:6px;"><strong>Reason:</strong> ${esc(data.reason)}</div>` : ""}
+            <div style="font-size:13px;color:#cbd5e1;">Click any step below or use ◀ Prev / Next ▶ / Auto-Play above the diagram:</div>
+            <div class="exec-steps">${rowsHtml}</div>
+        `;
+
+        goToStep(convState.stepSnapshots.length - 1);
+    } catch (err) {
+        statusBox.className = "sim-status error";
+        statusBox.innerHTML = `<strong>⚠️ Error:</strong> ${esc(err.message)}`;
+    }
+}
+
+function goToStep(idx) {
+    if (!convState.stepSnapshots.length) return;
+    const clamped = Math.max(0, Math.min(idx, convState.stepSnapshots.length - 1));
+    convState.currentStep = clamped;
+    const snap = convState.stepSnapshots[clamped];
+
+    document.getElementById("stepIndicator").textContent =
+        `Step ${clamped}/${convState.stepSnapshots.length - 1} (${snap.symbol})`;
+
+    convState.stepSnapshots.forEach((_, i) => {
+        const el = document.getElementById(`convStepRow_${i}`);
+        if (el) el.classList.toggle("active-step", i === clamped);
     });
 
+    drawGraph(
+        convState.states,
+        convState.transitions,
+        convState.startState,
+        convState.finalStates,
+        snap.activeStates,
+        snap.prevStates,
+        snap.symbol
+    );
+}
+
+function prevStep() {
+    stopAutoPlay();
+    if (convState.currentStep > 0) goToStep(convState.currentStep - 1);
+}
+
+function nextStep() {
+    stopAutoPlay();
+    if (convState.currentStep < convState.stepSnapshots.length - 1) goToStep(convState.currentStep + 1);
+}
+
+function toggleAutoPlay() {
+    if (convState.timer) {
+        stopAutoPlay();
+        return;
+    }
+    if (!convState.stepSnapshots.length) {
+        simulateResultAutomaton();
+        return;
+    }
+    if (convState.currentStep >= convState.stepSnapshots.length - 1) {
+        goToStep(0);
+    }
+    document.getElementById("playBtn").textContent = "⏸ Pause";
+    convState.timer = setInterval(() => {
+        if (convState.currentStep < convState.stepSnapshots.length - 1) {
+            goToStep(convState.currentStep + 1);
+        } else {
+            stopAutoPlay();
+        }
+    }, 950);
+}
+
+function stopAutoPlay() {
+    if (convState.timer) {
+        clearInterval(convState.timer);
+        convState.timer = null;
+    }
+    const btn = document.getElementById("playBtn");
+    if (btn) btn.textContent = "⏯ Auto-Play";
+}
+
+/* =========================
+   INTERACTIVE SVG DIAGRAM
+========================= */
+
+function createSVG(tag, attrs = {}) {
+    const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+    return el;
+}
+
+function addText(svg, txt, x, y, attrs = {}) {
+    const el = createSVG("text", { x, y, ...attrs });
+    el.textContent = txt;
+    svg.appendChild(el);
+    return el;
+}
+
+function calculatePositions(states) {
+    const pos = {};
+    if (!states.length) return pos;
+    const cx = 500, cy = 200;
+    const radius = Math.min(300, 105 + states.length * 28);
+    states.forEach((st, idx) => {
+        const angle = -Math.PI / 2 + (2 * Math.PI * idx) / states.length;
+        pos[st] = {
+            x: cx + radius * Math.cos(angle),
+            y: cy + radius * 0.58 * Math.sin(angle)
+        };
+    });
+    return pos;
+}
+
+function drawGraph(states, transitions, startState, finalStates, activeStates = [], prevStates = [], activeSymbol = "") {
+    const container = document.getElementById("diagram");
+    container.innerHTML = "";
+    const svg = createSVG("svg", { viewBox: "0 0 1000 400", role: "img" });
+
+    const defs = createSVG("defs");
+    [["convArrowDefault", "#94a3b8"], ["convArrowActive", "#facc15"]].forEach(([id, color]) => {
+        const m = createSVG("marker", {
+            id, markerWidth: "10", markerHeight: "10", refX: "9", refY: "3",
+            orient: "auto", markerUnits: "strokeWidth"
+        });
+        m.appendChild(createSVG("path", { d: "M0,0 L0,6 L9,3 z", fill: color }));
+        defs.appendChild(m);
+    });
+    svg.appendChild(defs);
+
+    const positions = calculatePositions(states);
     const grouped = {};
+
     states.forEach(src => {
-        Object.entries(transitions[src] || {}).forEach(([sym, dstVal]) => {
-            const dsts = Array.isArray(dstVal) ? dstVal : (dstVal ? [dstVal] : []);
-            dsts.forEach(dst => {
+        const map = transitions[src] || {};
+        Object.entries(map).forEach(([sym, dstVal]) => {
+            const dstList = Array.isArray(dstVal) ? dstVal : (dstVal ? [dstVal] : []);
+            dstList.forEach(dst => {
                 const key = `${src}__${dst}`;
-                if (!grouped[key]) grouped[key] = { from: src, to: dst, syms: [] };
-                grouped[key].syms.push(sym);
+                if (!grouped[key]) grouped[key] = { from: src, to: dst, symbols: [] };
+                grouped[key].symbols.push(sym);
             });
         });
     });
 
-    Object.values(grouped).forEach(e => {
-        const a = pos[e.from], b = pos[e.to];
-        if (!a || !b) return;
-        const lbl = e.syms.join(",");
-        if (e.from === e.to) {
-            svg.appendChild(mk("path", {
-                d: `M ${a.x - 25} ${a.y - 30} C ${a.x - 85} ${a.y - 105}, ${a.x + 85} ${a.y - 105}, ${a.x + 25} ${a.y - 30}`,
-                fill: "none", stroke: "#94a3b8", "stroke-width": "2", "marker-end": "url(#convArr)"
-            }));
-            const t = mk("text", { x: a.x, y: a.y - 78, fill: "#f8fafc", "font-size": "13", "font-weight": "bold", "text-anchor": "middle" });
-            t.textContent = lbl;
-            svg.appendChild(t);
-            return;
-        }
-        const ang = Math.atan2(b.y - a.y, b.x - a.x);
-        const sx = a.x + Math.cos(ang) * 40, sy = a.y + Math.sin(ang) * 40;
-        const ex = b.x - Math.cos(ang) * 40, ey = b.y - Math.sin(ang) * 40;
-        const rev = Boolean(grouped[`${e.to}__${e.from}`]);
+    Object.values(grouped).forEach(edge => {
+        if (!positions[edge.from] || !positions[edge.to]) return;
+        const isEdgeActive = prevStates.includes(edge.from) &&
+            activeStates.includes(edge.to) &&
+            edge.symbols.includes(activeSymbol);
 
-        if (rev) {
-            const dx = ex - sx, dy = ey - sy, len = Math.hypot(dx, dy) || 1;
-            const nx = -dy / len, ny = dx / len;
-            const ctrlX = (sx + ex) / 2 + nx * 34, ctrlY = (sy + ey) / 2 + ny * 34;
-            svg.appendChild(mk("path", {
-                d: `M ${sx} ${sy} Q ${ctrlX} ${ctrlY} ${ex} ${ey}`,
-                fill: "none", stroke: "#94a3b8", "stroke-width": "2", "marker-end": "url(#convArr)"
-            }));
-            const t = mk("text", {
-                x: 0.25 * sx + 0.5 * ctrlX + 0.25 * ex + nx * 10,
-                y: 0.25 * sy + 0.5 * ctrlY + 0.25 * ey + ny * 10,
-                fill: "#f8fafc", "font-size": "13", "font-weight": "bold", "text-anchor": "middle"
-            });
-            t.textContent = lbl;
-            svg.appendChild(t);
-        } else {
-            svg.appendChild(mk("line", { x1: sx, y1: sy, x2: ex, y2: ey, stroke: "#94a3b8", "stroke-width": "2", "marker-end": "url(#convArr)" }));
-            const t = mk("text", { x: (sx + ex) / 2, y: (sy + ey) / 2 - 8, fill: "#f8fafc", "font-size": "13", "font-weight": "bold", "text-anchor": "middle" });
-            t.textContent = lbl;
-            svg.appendChild(t);
-        }
+        const reverseExists = edge.from !== edge.to && Boolean(grouped[`${edge.to}__${edge.from}`]);
+        drawEdge(svg, positions[edge.from], positions[edge.to], edge.symbols.join(","), edge.from === edge.to, reverseExists, isEdgeActive);
     });
 
-    if (pos[startState]) {
-        const p = pos[startState];
-        svg.appendChild(mk("line", { x1: p.x - 75, y1: p.y, x2: p.x - 42, y2: p.y, stroke: "#2dd4bf", "stroke-width": "2.5", "marker-end": "url(#convArr)" }));
-        const stTxt = mk("text", { x: p.x - 74, y: p.y - 10, fill: "#2dd4bf", "font-size": "13", "text-anchor": "middle" });
-        stTxt.textContent = "start";
-        svg.appendChild(stTxt);
+    if (positions[startState]) {
+        const p = positions[startState];
+        svg.appendChild(createSVG("line", {
+            x1: p.x - 75, y1: p.y, x2: p.x - 42, y2: p.y,
+            stroke: "#2dd4bf", "stroke-width": "2.5", "marker-end": "url(#convArrowDefault)"
+        }));
+        addText(svg, "start", p.x - 74, p.y - 10, { fill: "#2dd4bf", "font-size": "13", "text-anchor": "middle" });
     }
 
     states.forEach(st => {
-        const p = pos[st];
-        const isF = finalStates.includes(st);
-        svg.appendChild(mk("circle", { cx: p.x, cy: p.y, r: "38", fill: "#020617", stroke: isF ? "#22c55e" : "#2dd4bf", "stroke-width": "3" }));
-        if (isF) {
-            svg.appendChild(mk("circle", { cx: p.x, cy: p.y, r: "31", fill: "none", stroke: "#22c55e", "stroke-width": "2" }));
+        const p = positions[st];
+        if (!p) return;
+        const isFinal = finalStates.includes(st);
+        const isActive = activeStates.includes(st);
+
+        const strokeColor = isActive ? "#facc15" : (isFinal ? "#22c55e" : "#2dd4bf");
+        const fillColor = isActive ? "#422006" : "#0f172a";
+
+        svg.appendChild(createSVG("circle", {
+            cx: p.x, cy: p.y, r: "38",
+            fill: fillColor,
+            stroke: strokeColor,
+            "stroke-width": isActive ? "4.5" : "3"
+        }));
+
+        if (isFinal) {
+            svg.appendChild(createSVG("circle", {
+                cx: p.x, cy: p.y, r: "31",
+                fill: "none",
+                stroke: isActive ? "#facc15" : "#22c55e",
+                "stroke-width": "2"
+            }));
         }
-        const label = mk("text", { x: p.x, y: p.y + 5, fill: "#f8fafc", "font-size": st.length > 6 ? "11" : "14", "font-weight": "bold", "text-anchor": "middle" });
-        label.textContent = st;
-        svg.appendChild(label);
+
+        addText(svg, st, p.x, p.y + 5, {
+            fill: isActive ? "#fef08a" : "#f8fafc",
+            "font-size": st.length > 7 ? "11" : "15",
+            "font-weight": "bold",
+            "text-anchor": "middle"
+        });
     });
 
     container.appendChild(svg);
+}
+
+function drawEdge(svg, from, to, label, selfLoop, hasReverse, isActive) {
+    const stroke = isActive ? "#facc15" : "#94a3b8";
+    const width = isActive ? "3.5" : "2";
+    const marker = isActive ? "url(#convArrowActive)" : "url(#convArrowDefault)";
+    const textFill = isActive ? "#facc15" : "#f8fafc";
+
+    if (selfLoop) {
+        svg.appendChild(createSVG("path", {
+            d: `M ${from.x - 25} ${from.y - 30} C ${from.x - 85} ${from.y - 105}, ${from.x + 85} ${from.y - 105}, ${from.x + 25} ${from.y - 30}`,
+            fill: "none", stroke, "stroke-width": width, "marker-end": marker
+        }));
+        addText(svg, label, from.x, from.y - 78, { fill: textFill, "font-size": "14", "font-weight": "bold", "text-anchor": "middle" });
+        return;
+    }
+
+    const angle = Math.atan2(to.y - from.y, to.x - from.x);
+    const sx = from.x + Math.cos(angle) * 40;
+    const sy = from.y + Math.sin(angle) * 40;
+    const ex = to.x - Math.cos(angle) * 40;
+    const ey = to.y - Math.sin(angle) * 40;
+
+    if (hasReverse) {
+        const dx = ex - sx, dy = ey - sy;
+        const len = Math.hypot(dx, dy) || 1;
+        const nx = -dy / len, ny = dx / len;
+        const cx = (sx + ex) / 2 + nx * 34;
+        const cy = (sy + ey) / 2 + ny * 34;
+
+        svg.appendChild(createSVG("path", {
+            d: `M ${sx} ${sy} Q ${cx} ${cy} ${ex} ${ey}`,
+            fill: "none", stroke, "stroke-width": width, "marker-end": marker
+        }));
+        const lx = 0.25 * sx + 0.5 * cx + 0.25 * ex + nx * 10;
+        const ly = 0.25 * sy + 0.5 * cy + 0.25 * ey + ny * 10;
+        addText(svg, label, lx, ly, { fill: textFill, "font-size": "14", "font-weight": "bold", "text-anchor": "middle" });
+        return;
+    }
+
+    svg.appendChild(createSVG("line", {
+        x1: sx, y1: sy, x2: ex, y2: ey,
+        stroke, "stroke-width": width, "marker-end": marker
+    }));
+    addText(svg, label, (sx + ex) / 2, (sy + ey) / 2 - 8, {
+        fill: textFill, "font-size": "14", "font-weight": "bold", "text-anchor": "middle"
+    });
 }
 </script>
 </body>
