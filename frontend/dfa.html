@@ -1,224 +1,2601 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>AI-TOC Simulator - DFA</title>
-<style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f5f8;color:#1f2937}
-.nav{background:#101827;color:#fff;padding:15px 28px;display:flex;justify-content:space-between;align-items:center;gap:15px}
-.logo{font-weight:800;font-size:20px}.links{display:flex;gap:7px;flex-wrap:wrap}.links a{color:#dbeafe;text-decoration:none;padding:9px 13px;border-radius:7px;font-size:14px}.links a:hover,.links .active{background:#2563eb;color:#fff}
-.wrap{width:96%;max-width:1500px;margin:22px auto 50px}.hero{background:linear-gradient(135deg,#111827,#1e3a5f);color:#fff;padding:23px 27px;border-radius:12px;margin-bottom:16px}.hero h1{margin:0 0 6px}.hero p{margin:0;color:#dbeafe}
-.card{background:#fff;border:1px solid #d9e0e8;border-radius:11px;padding:17px;margin-bottom:17px;box-shadow:0 2px 8px #0f172a0d}.card h2{font-size:18px;margin:0 0 13px;color:#1e3a5f}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}.field label{display:block;font-size:13px;font-weight:700;color:#475569;margin-bottom:5px}
-input,textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:7px;font-size:14px}textarea{min-height:115px;font-family:Consolas,monospace;resize:vertical}.help{font-size:12px;color:#64748b;margin-top:5px}
-.btns{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}button{border:0;border-radius:7px;padding:10px 15px;color:#fff;font-weight:700;cursor:pointer}button:hover{filter:brightness(.94)}.blue{background:#2563eb}.green{background:#16a34a}.red{background:#dc2626}.gray{background:#64748b}
-.formal{background:#f8fafc;border:1px solid #dbe3ec;border-radius:7px;padding:13px;font-family:Consolas,monospace;line-height:1.8;overflow:auto}
-.status{display:none;margin-top:12px;padding:12px;border-radius:7px;font-weight:700}.status.ok{display:block;background:#dcfce7;color:#166534}.status.bad{display:block;background:#fee2e2;color:#991b1b}.status.err{display:block;background:#ffedd5;color:#9a3412}
-.table{width:100%;border-collapse:collapse}.table th,.table td{padding:9px;border:1px solid #dbe3ec;text-align:center}.table th{background:#1e4f91;color:#fff}.table td{font-family:Consolas,monospace}
-.two{display:block}
-.graph{border:1px solid #d4dce6;border-radius:9px;padding:11px;background:#fff}.gt{font-weight:800;color:#334155;padding:5px 5px 11px;border-bottom:1px solid #e2e8f0}
-#graph{width:100%;height:500px;border:2px solid #47739d;border-radius:8px;margin-top:10px;background:#fff}
-svg{width:100%;height:100%;display:block}.edge{fill:none;stroke:#64748b;stroke-width:2.2}.edge.active{stroke:#ef2d2d;stroke-width:5}.elabel{font-size:15px;font-weight:800;fill:#334155;text-anchor:middle}.elabel.active{fill:#dc2626}.state{fill:#fff;stroke:#475569;stroke-width:2.5}
-.state.start-state{fill:#f0fdf4;stroke:#16a34a;stroke-width:4}
-.state.final-state{fill:#fff1f2;stroke:#dc2626;stroke-width:4}
-.state.current{stroke:#f59e0b;stroke-width:5}
-.state.accept{fill:#fff1f2;stroke:#dc2626;stroke-width:5}
-.ring{fill:none;stroke:#dc2626;stroke-width:2.5}
-.ring.accept{stroke:#dc2626;stroke-width:4}.slabel{font-size:17px;font-weight:800;fill:#111827;text-anchor:middle;dominant-baseline:middle}.start{stroke:#334155;stroke-width:3}.starttext{font-size:13px;font-weight:700;fill:#334155}
-.tit{text-align:center;margin:13px 0 7px;font-weight:800;color:#334155}.tape{display:flex;justify-content:center;gap:7px;flex-wrap:wrap}.cell{min-width:40px;padding:9px 13px;border:2px solid #94a3b8;border-radius:6px;text-align:center;font:800 14px Consolas;background:#fff}.cell.active{background:#fef08a;border-color:#f59e0b}.cell.done{background:#dcfce7;border-color:#22c55e}
-.result{width:100%;border-collapse:collapse;margin-top:15px;font-size:13px}.result th{background:#1e4f91;color:#fff;padding:9px}.result td{border:1px solid #e2e8f0;padding:9px;text-align:center}.yes{color:#15803d;font-weight:800}.no{color:#b91c1c;font-weight:800}
-.exec{background:#f8fafc;border:1px solid #dbe3ec;border-radius:7px;padding:11px;font:14px Consolas;max-height:250px;overflow:auto}.exrow{padding:7px;border-bottom:1px solid #e2e8f0}
-@media(max-width:1000px){.two,.grid{grid-template-columns:1fr}.nav{flex-direction:column;align-items:flex-start}#graph{height:430px}}
-</style>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>DFA Simulator | AI-TOC Simulator</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+
+            background: #0f172a;
+
+            color: #e2e8f0;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #111827,
+                    #1e3a8a
+                );
+
+            padding: 32px 20px 20px;
+
+            text-align: center;
+
+            border-bottom:
+                1px solid #334155;
+        }
+
+
+        header h1 {
+
+            margin: 0 0 8px;
+
+            font-size: 32px;
+        }
+
+
+        header p {
+
+            margin: 0;
+
+            color: #cbd5e1;
+        }
+
+
+        /* =========================
+           MENU
+        ========================= */
+
+        .menu {
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            flex-wrap: wrap;
+
+            gap: 8px;
+
+            width: fit-content;
+
+            max-width: 94%;
+
+            margin: 18px auto 25px;
+
+            padding: 7px;
+
+            background: #111827;
+
+            border:
+                1px solid #334155;
+
+            border-radius: 50px;
+
+            box-shadow:
+                0 8px 25px
+                rgba(0, 0, 0, 0.25);
+        }
+
+
+        .menu a {
+
+            text-decoration: none;
+
+            color: #cbd5e1;
+
+            padding: 10px 18px;
+
+            border-radius: 30px;
+
+            font-weight: 600;
+
+            transition: 0.2s;
+        }
+
+
+        .menu a:hover {
+
+            background: #1e293b;
+
+            color: white;
+        }
+
+
+        .menu .active {
+
+            background: #2563eb;
+
+            color: white;
+
+            box-shadow:
+                0 5px 15px
+                rgba(37, 99, 235, 0.35);
+        }
+
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .container {
+
+            width: min(1150px, 94%);
+
+            margin: 0 auto 50px;
+        }
+
+
+        .page-title {
+
+            text-align: center;
+
+            margin: 25px 0;
+        }
+
+
+        .page-title h2 {
+
+            color: #60a5fa;
+
+            font-size: 30px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .page-title p {
+
+            color: #94a3b8;
+        }
+
+
+        /* =========================
+           CARD
+        ========================= */
+
+        .card {
+
+            background: #111827;
+
+            border:
+                1px solid #334155;
+
+            border-radius: 16px;
+
+            padding: 24px;
+
+            box-shadow:
+                0 12px 30px
+                rgba(0, 0, 0, 0.22);
+        }
+
+
+        .form-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 20px;
+        }
+
+
+        .field {
+
+            min-width: 0;
+        }
+
+
+        .full {
+
+            grid-column:
+                1 / -1;
+        }
+
+
+        label {
+
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-weight: bold;
+
+            color: #cbd5e1;
+        }
+
+
+        input,
+        textarea {
+
+            width: 100%;
+
+            border:
+                1px solid #475569;
+
+            border-radius: 9px;
+
+            padding: 11px 12px;
+
+            background: #0f172a;
+
+            color: #f8fafc;
+
+            outline: none;
+
+            font-size: 14px;
+        }
+
+
+        input:focus,
+        textarea:focus {
+
+            border-color:
+                #60a5fa;
+        }
+
+
+        textarea {
+
+            min-height: 190px;
+
+            resize: vertical;
+
+            font-family:
+                Consolas,
+                monospace;
+        }
+
+
+        .help {
+
+            color: #94a3b8;
+
+            font-size: 12px;
+
+            line-height: 1.6;
+
+            margin-top: 7px;
+        }
+
+
+        .example {
+
+            color: #60a5fa;
+        }
+
+
+        /* =========================
+           BUTTON
+        ========================= */
+
+        button {
+
+            width: 100%;
+
+            border: none;
+
+            border-radius: 10px;
+
+            padding: 13px 16px;
+
+            margin-top: 5px;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            color: white;
+
+            background: #2563eb;
+
+            transition: 0.2s;
+        }
+
+
+        button:hover {
+
+            background: #1d4ed8;
+
+            transform:
+                translateY(-1px);
+        }
+
+
+        /* =========================
+           RESULT
+        ========================= */
+
+        .result {
+
+            margin-top: 20px;
+
+            border-radius: 12px;
+
+            padding: 16px;
+
+            display: none;
+        }
+
+
+        .accepted {
+
+            background: #052e16;
+
+            border:
+                1px solid #22c55e;
+        }
+
+
+        .rejected {
+
+            background: #450a0a;
+
+            border:
+                1px solid #ef4444;
+        }
+
+
+        .error {
+
+            background: #451a03;
+
+            border:
+                1px solid #f97316;
+        }
+
+
+        .result-title {
+
+            font-size: 21px;
+
+            font-weight: bold;
+
+            margin-bottom: 12px;
+        }
+
+
+        .result p {
+
+            margin: 8px 0;
+
+            line-height: 1.5;
+        }
+
+
+        /* =========================
+           EXECUTION PATH
+        ========================= */
+
+        .execution {
+
+            margin-top: 15px;
+        }
+
+
+        .step {
+
+            display: grid;
+
+            grid-template-columns:
+                80px 90px 1fr;
+
+            gap: 10px;
+
+            align-items: center;
+
+            padding: 10px 12px;
+
+            margin-top: 7px;
+
+            background: #020617;
+
+            border:
+                1px solid #1e293b;
+
+            border-radius: 8px;
+        }
+
+
+        .step-number {
+
+            color: #94a3b8;
+
+            font-weight: bold;
+        }
+
+
+        .step-input {
+
+            color: #60a5fa;
+
+            font-family:
+                Consolas,
+                monospace;
+
+            font-weight: bold;
+        }
+
+
+        .step-states {
+
+            color: #f8fafc;
+
+            font-family:
+                Consolas,
+                monospace;
+        }
+
+
+        /* =========================
+           DIAGRAM
+        ========================= */
+
+        .diagram-card {
+
+            margin-top: 22px;
+        }
+
+
+        .diagram-card h3 {
+
+            color: #60a5fa;
+
+            margin-top: 0;
+        }
+
+
+        .diagram {
+
+            width: 100%;
+
+            min-height: 430px;
+
+            background: #020617;
+
+            border:
+                1px solid #334155;
+
+            border-radius: 12px;
+
+            overflow: auto;
+
+            padding: 10px;
+        }
+
+
+        svg {
+
+            display: block;
+
+            width: 100%;
+
+            min-width: 760px;
+
+            height: 400px;
+        }
+
+
+        /* =========================
+           LEGEND
+        ========================= */
+
+        .legend {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 18px;
+
+            margin-top: 12px;
+
+            color: #94a3b8;
+
+            font-size: 13px;
+        }
+
+
+        .legend span {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+        }
+
+
+        .dot {
+
+            width: 12px;
+
+            height: 12px;
+
+            display: inline-block;
+
+            border-radius: 50%;
+
+            border:
+                2px solid #60a5fa;
+        }
+
+
+        .dot.final {
+
+            border-color:
+                #22c55e;
+        }
+
+
+        .dot.start {
+
+            background:
+                #60a5fa;
+        }
+
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+
+            text-align: center;
+
+            padding: 25px;
+
+            color: #64748b;
+
+            border-top:
+                1px solid #1e293b;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 750px) {
+
+            .form-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .full {
+
+                grid-column: auto;
+            }
+
+
+            header h1 {
+
+                font-size: 26px;
+            }
+
+
+            .menu {
+
+                border-radius: 15px;
+            }
+
+
+            .menu a {
+
+                padding:
+                    9px 12px;
+            }
+
+
+            .step {
+
+                grid-template-columns:
+                    60px 70px 1fr;
+
+                font-size: 13px;
+            }
+
+        }
+
+    </style>
+
 </head>
+
+
 <body>
-<nav class="nav">
-  <div class="logo">🤖 AI-TOC SIMULATOR</div>
-  <div class="links">
-    <a href="index.html">🏠 Home</a><a class="active" href="dfa.html">🔵 DFA</a>
-    <a href="nfa.html">🟣 NFA</a><a href="enfa.html">🟠 ε-NFA</a>
-  </div>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header>
+
+    <h1>
+        🤖 AI-TOC Simulator
+    </h1>
+
+    <p>
+        Theory of Computation Learning Platform
+    </p>
+
+</header>
+
+
+<!-- =========================
+     CENTER MENU
+========================= -->
+
+<nav class="menu">
+
+    <a href="index.html">
+        🏠 Home
+    </a>
+
+    <a
+        href="dfa.html"
+        class="active"
+    >
+        🔵 DFA
+    </a>
+
+    <a href="nfa.html">
+        🟣 NFA
+    </a>
+
+    <a href="enfa.html">
+        🟠 ε-NFA
+    </a>
+
 </nav>
 
-<main class="wrap">
-<section class="hero"><h1>🔵 Deterministic Finite Automaton (DFA)</h1><p>Define the language, transition function and input string, then simulate the DFA step by step.</p></section>
 
-<section class="card">
-<h2>1. Formal Language</h2>
-<input id="language" value="L = { w ∈ {a,b}* | w ends with 'ab' }">
-</section>
+<main class="container">
 
-<section class="card">
-<h2>2. DFA Definition</h2>
-<div class="formal"><b>M = (Q, Σ, δ, q₀, F)</b><br>Q = Set of states<br>Σ = Input alphabet<br>δ = Transition function<br>q₀ = Initial state<br>F = Set of final states</div><br>
-<div class="grid">
-<div class="field"><label>States Q</label><input id="states" value="q0,q1,q2"></div>
-<div class="field"><label>Alphabet Σ</label><input id="alphabet" value="a,b"></div>
-<div class="field"><label>Start State q₀</label><input id="start" value="q0"></div>
-<div class="field"><label>Final States F</label><input id="final" value="q2"></div>
-</div><br>
-<div class="field"><label>Transition Function δ</label>
-<textarea id="trans">q0,a,q1
+
+    <!-- =========================
+         TITLE
+    ========================= -->
+
+    <section class="page-title">
+
+        <h2>
+            🔵 DFA Simulator
+        </h2>
+
+        <p>
+            Deterministic Finite Automaton
+            simulation and visualization
+        </p>
+
+    </section>
+
+
+    <!-- =========================
+         SIMULATOR
+    ========================= -->
+
+    <section class="card">
+
+        <div class="form-grid">
+
+
+            <!-- STATES -->
+
+            <div class="field">
+
+                <label for="states">
+                    States
+                </label>
+
+                <input
+                    id="states"
+                    type="text"
+                    value="q0,q1,q2"
+                    placeholder="Example: q0,q1,q2"
+                >
+
+            </div>
+
+
+            <!-- ALPHABET -->
+
+            <div class="field">
+
+                <label for="alphabet">
+                    Alphabet
+                </label>
+
+                <input
+                    id="alphabet"
+                    type="text"
+                    value="a,b"
+                    placeholder="Example: a,b"
+                >
+
+            </div>
+
+
+            <!-- START -->
+
+            <div class="field">
+
+                <label for="startState">
+                    Start State
+                </label>
+
+                <input
+                    id="startState"
+                    type="text"
+                    value="q0"
+                    placeholder="Example: q0"
+                >
+
+            </div>
+
+
+            <!-- FINAL -->
+
+            <div class="field">
+
+                <label for="finalStates">
+                    Final States
+                </label>
+
+                <input
+                    id="finalStates"
+                    type="text"
+                    value="q2"
+                    placeholder="Example: q2"
+                >
+
+            </div>
+
+
+            <!-- TRANSITIONS -->
+
+            <div class="field full">
+
+                <label for="transitions">
+                    DFA Transition Table
+                </label>
+
+                <textarea id="transitions">q0,a,q1
 q0,b,q0
 q1,a,q1
 q1,b,q2
 q2,a,q1
 q2,b,q0</textarea>
-<div class="help">One transition per line: state,symbol,destination</div></div><br>
-<div class="field"><label>Input String w</label><input id="input" value="aab"></div>
-<div class="btns"><button class="blue" onclick="build()">Generate DFA</button><button class="green" onclick="run()">Run Simulation</button><button class="gray" onclick="reset()">Reset</button></div>
-<div id="status" class="status"></div>
-</section>
 
-<section class="card"><h2>3. Transition Function δ</h2><div id="tt"></div></section>
+                <p class="help">
 
-<section class="card">
-<h2>4. DFA Simulation</h2>
-<div class="btns"><button class="green" onclick="step()">Step Transition Arrow</button><button class="red" onclick="reset()">Reset DFA</button></div>
-<div class="two" style="margin-top:15px">
-<div class="graph">
-<div class="gt">STATE TRANSITION GRAPH WITH LABELED ARROWS</div>
-<div id="graph"><svg id="svg" viewBox="0 0 900 500">
-<defs>
-<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#64748b"/></marker>
-<marker id="arrred" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ef2d2d"/></marker>
-</defs><g id="edges"></g><g id="nodes"></g></svg></div>
-<div class="tit">Input String Tape <span id="lang"></span></div><div id="tape" class="tape"></div>
-<table class="result"><thead><tr><th>Current State</th><th>Input Symbol</th><th>Active Arrow Transition</th><th>Accepting State?</th></tr></thead>
-<tbody><tr><td id="rs">q0</td><td id="ri">—</td><td id="rt">Awaiting Step</td><td id="ra" class="no">NO</td></tr></tbody></table>
-</div>
-</div>
-</section>
+                    Enter one transition per line:
 
-<section class="card"><h2>5. Execution Steps</h2><div id="exec" class="exec">DFA is ready.</div></section>
+                    <strong>
+                        state,symbol,destination
+                    </strong>
+
+                    <br>
+
+                    Example:
+
+                    <span class="example">
+                        q0,a,q1
+                    </span>
+
+                    means that on input
+                    <strong>a</strong>,
+                    DFA moves from
+                    <strong>q0</strong>
+                    to
+                    <strong>q1</strong>.
+
+                    <br>
+
+                    Every state must define a single destination state for each symbol in the alphabet.
+
+                </p>
+
+            </div>
+
+
+            <!-- INPUT -->
+
+            <div class="field full">
+
+                <label for="inputString">
+                    Input String
+                </label>
+
+                <input
+                    id="inputString"
+                    type="text"
+                    value="aab"
+                    placeholder="Example: aab"
+                >
+
+            </div>
+
+
+            <!-- BUTTON -->
+
+            <div class="field full">
+
+                <button
+                    onclick="simulateDFA()"
+                >
+                    ▶ Simulate DFA
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- RESULT -->
+
+        <div
+            id="result"
+            class="result"
+        ></div>
+
+    </section>
+
+
+    <!-- =========================
+         DIAGRAM
+    ========================= -->
+
+    <section
+        class="card diagram-card"
+    >
+
+        <h3>
+            🔵 DFA State Diagram
+        </h3>
+
+        <div
+            id="diagram"
+            class="diagram"
+        >
+
+            <p
+                style="
+                    text-align:center;
+                    color:#64748b;
+                "
+            >
+                Run the simulator to generate
+                the DFA diagram.
+            </p>
+
+        </div>
+
+
+        <div class="legend">
+
+            <span>
+
+                <i class="dot start"></i>
+
+                Start state
+
+            </span>
+
+
+            <span>
+
+                <i class="dot final"></i>
+
+                Final state
+
+            </span>
+
+
+            <span>
+
+                ○ Normal state
+
+            </span>
+
+        </div>
+
+    </section>
+
+
 </main>
 
+
+<footer>
+
+    AI-TOC Simulator
+
+    <br>
+
+    DFA Simulation Module
+
+</footer>
+
+
 <script>
-let D=null,S=null,k=0;
-const NS="http://www.w3.org/2000/svg";
-const $=id=>document.getElementById(id);
-const list=x=>x.split(",").map(v=>v.trim()).filter(Boolean);
-const esc=x=>String(x).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
-function data(){
- let states=list($("states").value), alphabet=list($("alphabet").value), start=$("start").value.trim(), finals=list($("final").value), input=$("input").value.trim(), T={};
- $("trans").value.split("\n").map(x=>x.trim()).filter(Boolean).forEach(line=>{
-   let p=line.split(",").map(x=>x.trim()); if(p.length!==3) throw Error("Invalid transition: "+line);
-   T[p[0]]??={}; T[p[0]][p[1]]=p[2];
- });
- if(!states.includes(start))throw Error("Start state must belong to Q.");
- finals.forEach(f=>{if(!states.includes(f))throw Error("Final state "+f+" is not in Q.")});
- states.forEach(q=>alphabet.forEach(a=>{if(!T[q]?.[a])throw Error(`Missing transition δ(${q}, ${a}).`);if(!states.includes(T[q][a]))throw Error("Invalid destination "+T[q][a])}));
- return {states,alphabet,start,finals,input,T};
+
+
+/* =========================
+   BACKEND
+========================= */
+
+const BACKEND_URL =
+    (window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost")
+        ? "http://127.0.0.1:8000"
+        : "/api";
+
+
+/* =========================
+   PARSE LIST
+========================= */
+
+function parseList(value) {
+
+    return value
+        .split(",")
+        .map(
+            item => item.trim()
+        )
+        .filter(
+            item =>
+                item.length > 0
+        );
+
 }
-function build(){try{D=data();S=null;k=0;renderAll();status("DFA generated successfully.","ok")}catch(e){status(e.message,"err")}}
-function renderAll(){table();code();tape();graph();result();$("exec").innerHTML="DFA is ready. Click <b>Step Transition Arrow</b> to move through the input."}
-function table(){let h="<table class=table><thead><tr><th>State</th>"+D.alphabet.map(a=>`<th>${esc(a)}</th>`).join("")+"</tr></thead><tbody>";D.states.forEach(q=>{h+=`<tr><td><b>${esc(q)}</b></td>`;D.alphabet.forEach(a=>h+=`<td>δ(${esc(q)}, ${esc(a)}) = ${esc(D.T[q][a])}</td>`);h+="</tr>"});$("tt").innerHTML=h+"</tbody></table>"}
-function code(){let h=`1. States Q = {${D.states.join(", ")}}, Alphabet Σ = {${D.alphabet.join(", ")}}, Initial = ${D.start}, Final F = {${D.finals.join(", ")}}<br>2. Transition Table δ:<br>`;D.states.forEach((q,i)=>h+=`<div id=c${i} class=code>    ${D.alphabet.map(a=>`δ(${q}, '${a}') = ${D.T[q][a]}`).join(", ")}</div>`);h+="<br>3. Check: If current_state in F → ACCEPT, Else → REJECT";$("code").innerHTML=h}
-function tape(){let h=D.input?[...D.input].map((x,i)=>`<div id=cell${i} class=cell>${esc(x)}</div>`).join(""):`<div class=cell>ε</div>`;$("tape").innerHTML=h;$("lang").textContent="("+$("language").value+")"}
-function run(){try{D=data();let q=D.start,steps=[];[...D.input].forEach((a,i)=>{let n=D.T[q][a];steps.push({i,from:q,s:a,to:n});q=n});S={steps,final:q,accepted:D.finals.includes(q)};k=S.steps.length;renderAll();result();execution();graph();status(S.accepted?`ACCEPT — ${S.final} ∈ F`:`REJECT — ${S.final} ∉ F`,S.accepted?"ok":"bad")}catch(e){status(e.message,"err")}}
-function prepare(){if(!S){let q=D.start,steps=[];[...D.input].forEach((a,i)=>{let n=D.T[q][a];steps.push({i,from:q,s:a,to:n});q=n});S={steps,final:q,accepted:D.finals.includes(q)}}}
-function step(){try{D??=data();prepare();if(k<S.steps.length)k++;graph();result();execution();let s=k?S.steps[k-1]:null;D.states.forEach((q,i)=>$("c"+i)?.classList.remove("hl"));if(s){let i=D.states.indexOf(s.from);$("c"+i)?.classList.add("hl")}if(k===S.steps.length)status(S.accepted?`ACCEPT — ${S.final} ∈ F`:`REJECT — ${S.final} ∉ F`,S.accepted?"ok":"bad")}catch(e){status(e.message,"err")}}
-function reset(){
-  try{
-    D = data();
-    S = null;
-    k = 0;
 
-    table();
-    tape();
-    graph();
-    result();
 
-    $("exec").innerHTML =
-      "DFA reset. Click <b>Step Transition Arrow</b> to move through the input.";
+/* =========================
+   ESCAPE HTML
+========================= */
 
-    D.states.forEach((q,i)=>{
-      const line = $("c"+i);
-      if(line) line.classList.remove("hl");
-    });
+function escapeHTML(value) {
 
-    status("DFA reset successfully.","ok");
-  }catch(e){
-    status(e.message,"err");
-  }
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
 }
-function positions(){let p={};if(D.states.length===3){D.states.forEach((q,i)=>p[q]={x:230+i*220,y:270});return p}let cx=450,cy=270,rx=300,ry=170;D.states.forEach((q,i)=>{let a=-Math.PI/2+i*2*Math.PI/D.states.length;p[q]={x:cx+rx*Math.cos(a),y:cy+ry*Math.sin(a)}});return p}
-function active(e){return S&&k>0&&k<=S.steps.length&&S.steps[k-1].from===e.from&&S.steps[k-1].to===e.to&&S.steps[k-1].s===e.s}
-function graph(){if(!D)return;let E=$("edges"),N=$("nodes");E.innerHTML="";N.innerHTML="";let P=positions(), edges=[];D.states.forEach(f=>D.alphabet.forEach(a=>edges.push({from:f,to:D.T[f][a],s:a})));let groups={};edges.forEach(e=>{let key=e.from===e.to?"L"+e.from:[e.from,e.to].sort().join("|");(groups[key]??=[]).push(e)});let off={};Object.values(groups).forEach(g=>{
-  if(g.length===2 && g[0].from!==g[0].to){
-    const a=g[0], b=g[1];
 
-    // Two distinct one-way arcs. Their arrowheads cannot merge.
-    off[a.from+"|"+a.s] = -75;
-    off[b.from+"|"+b.s] = 75;
-  }else{
-    g.forEach((e,i)=>{
-      off[e.from+"|"+e.s] = (i-(g.length-1)/2)*50;
-    });
-  }
-});edges.forEach(e=>e.from===e.to?loop(E,P[e.from],e.s,active(e)):edge(E,P[e.from],P[e.to],e.s,off[e.from+"|"+e.s]||0,active(e)));D.states.forEach(q=>{let p=P[q],g=document.createElementNS(NS,"g"),c=document.createElementNS(NS,"circle"),cur=!S?k===0&&q===D.start:k>0&&k<=S.steps.length?q===S.steps[k-1].to:q===S.final;c.setAttribute("cx",p.x);
-c.setAttribute("cy",p.y);
-c.setAttribute("r",31);
 
-let stateClass = "state";
-if(q===D.start) stateClass += " start-state";
-if(D.finals.includes(q)) stateClass += " final-state";
-if(cur) stateClass += " current";
-if(S&&k===S.steps.length&&S.accepted&&q===S.final) stateClass += " accept";
+/* =========================
+   ERROR
+========================= */
 
-c.setAttribute("class",stateClass);g.appendChild(c);if(D.finals.includes(q)){
-  let acceptedFinal = S && k===S.steps.length && S.accepted && q===S.final;
-  let r=document.createElementNS(NS,"circle");
-  r.setAttribute("cx",p.x);
-  r.setAttribute("cy",p.y);
-  r.setAttribute("r",37);
-  r.setAttribute("class","ring"+(acceptedFinal?" accept":""));
-  g.appendChild(r);
-}let t=document.createElementNS(NS,"text");t.setAttribute("x",p.x);t.setAttribute("y",p.y);t.setAttribute("class","slabel");t.textContent=q;g.appendChild(t);N.appendChild(g)});let p=P[D.start],l=document.createElementNS(NS,"line");l.setAttribute("x1",p.x-80);l.setAttribute("y1",p.y);l.setAttribute("x2",p.x-34);l.setAttribute("y2",p.y);l.setAttribute("class","start");l.setAttribute("marker-end","url(#arr)");N.appendChild(l);let st=document.createElementNS(NS,"text");st.setAttribute("x",p.x-80);st.setAttribute("y",p.y-16);st.setAttribute("class","starttext");st.textContent="Start";N.appendChild(st)}
-function edge(L,a,b,s,o,act){
-  let dx=b.x-a.x, dy=b.y-a.y, len=Math.hypot(dx,dy);
-  let ux=dx/len, uy=dy/len, nx=-uy, ny=ux;
-  let sx=a.x+ux*32, sy=a.y+uy*32;
-  let ex=b.x-ux*34, ey=b.y-uy*34;
+function showError(message) {
 
-  let mx=(sx+ex)/2+nx*o;
-  let my=(sy+ey)/2+ny*o;
+    const result =
+        document.getElementById(
+            "result"
+        );
 
-  // Give the q2 -> q0 transition a dedicated lower route.
-  if(a.x>b.x && Math.abs(a.x-b.x)>300){
-    mx=(sx+ex)/2;
-    my=Math.max(sy,ey)+150;
-  }
 
-  let p=document.createElementNS(NS,"path");
-  p.setAttribute("d",`M${sx} ${sy} Q${mx} ${my} ${ex} ${ey}`);
-  p.setAttribute("class","edge"+(act?" active":""));
-  p.removeAttribute("marker-start");
-  p.setAttribute("marker-end",act?"url(#arrred)":"url(#arr)");
-  L.appendChild(p);
+    result.style.display =
+        "block";
 
-  let t=document.createElementNS(NS,"text");
 
-  let lx=.25*sx+.5*mx+.25*ex;
-  let ly=.25*sy+.5*my+.25*ey-10;
+    result.className =
+        "result error";
 
-  // Keep the lower q2 -> q0 label below its arc.
-  if(a.x>b.x && Math.abs(a.x-b.x)>300){
-    ly-=4;
-  }
 
-  t.setAttribute("x",lx);
-  t.setAttribute("y",ly);
-  t.setAttribute("class","elabel"+(act?" active":""));
-  t.textContent=s;
-  L.appendChild(t);
+    result.innerHTML = `
+
+        <div class="result-title">
+            ⚠️ Error
+        </div>
+
+        <p>
+            ${escapeHTML(message)}
+        </p>
+
+    `;
+
 }
-function loop(L,p,s,act){let path=document.createElementNS(NS,"path");path.setAttribute("d",`M${p.x-20} ${p.y-23} C${p.x-62} ${p.y-92},${p.x+62} ${p.y-92},${p.x+20} ${p.y-23}`);path.setAttribute("class","edge"+(act?" active":""));path.setAttribute("marker-end",act?"url(#arrred)":"url(#arr)");L.appendChild(path);let t=document.createElementNS(NS,"text");t.setAttribute("x",p.x);t.setAttribute("y",p.y-95);t.setAttribute("class","elabel"+(act?" active":""));t.textContent=s;L.appendChild(t)}
-function result(){if(!D)return;let q=D.start,s="—",tr="Awaiting Step";if(S&&k){let x=S.steps[k-1];q=x.to;s=x.s;tr=`${x.from} --${x.s}--> ${x.to}`}$("rs").textContent=q;$("ri").textContent=s;$("rt").textContent=tr;let a=$("ra"),yes=S&&k===S.steps.length&&S.accepted;a.textContent=yes?"YES":"NO";a.className=yes?"yes":"no";[...D.input].forEach((x,i)=>{let c=$("cell"+i);if(c){c.className="cell"+(S&&i<k?" done":"")+(S&&i===k-1?" active":"")}})}
-function execution(){if(!S){$("exec").innerHTML="Simulation not started.";return}let h=S.steps.map((x,i)=>`<div class=exrow style="${i===k-1?"background:#fff7d6;font-weight:700":""}">Step ${i+1}: ${esc(x.from)} --${esc(x.s)}--> ${esc(x.to)} ${i<k?"✓":""}</div>`).join("");if(k===S.steps.length)h+=`<div class=exrow><b>Final state: ${esc(S.final)} → ${S.accepted?"ACCEPT":"REJECT"}</b></div>`;$("exec").innerHTML=h}
-function status(m,c){$("status").textContent=m;$("status").className="status "+c}
-addEventListener("DOMContentLoaded",build);
+
+
+/* =========================
+   SIMULATE DFA
+========================= */
+
+async function simulateDFA() {
+
+    try {
+
+        const states =
+            parseList(
+                document
+                    .getElementById("states")
+                    .value
+            );
+
+
+        const alphabet =
+            parseList(
+                document
+                    .getElementById("alphabet")
+                    .value
+            );
+
+
+        const startState =
+            document
+                .getElementById("startState")
+                .value
+                .trim();
+
+
+        const finalStates =
+            parseList(
+                document
+                    .getElementById("finalStates")
+                    .value
+            );
+
+
+        const input =
+            document
+                .getElementById("inputString")
+                .value
+                .trim();
+
+
+        const transitionText =
+            document
+                .getElementById("transitions")
+                .value
+                .trim();
+
+
+        /* =========================
+           BASIC VALIDATION
+        ========================= */
+
+        if (states.length === 0) {
+
+            throw new Error(
+                "Please enter at least one state."
+            );
+
+        }
+
+
+        if (alphabet.length === 0) {
+
+            throw new Error(
+                "Please enter at least one alphabet symbol."
+            );
+
+        }
+
+
+        if (!startState) {
+
+            throw new Error(
+                "Please enter the start state."
+            );
+
+        }
+
+
+        if (
+            !states.includes(
+                startState
+            )
+        ) {
+
+            throw new Error(
+                `Start state "${startState}" does not exist.`
+            );
+
+        }
+
+
+        if (
+            finalStates.length === 0
+        ) {
+
+            throw new Error(
+                "Please enter at least one final state."
+            );
+
+        }
+
+
+        for (
+            const state
+            of finalStates
+        ) {
+
+            if (
+                !states.includes(state)
+            ) {
+
+                throw new Error(
+                    `Final state "${state}" does not exist.`
+                );
+
+            }
+
+        }
+
+
+        /* =========================
+           BUILD TRANSITIONS
+        ========================= */
+
+        const transitions = {};
+
+
+        states.forEach(
+            state => {
+
+                transitions[state] =
+                    {};
+
+            }
+        );
+
+
+        const lines =
+            transitionText
+                .split("
+")
+                .map(
+                    line =>
+                        line.trim()
+                )
+                .filter(
+                    line =>
+                        line.length > 0
+                );
+
+
+        for (
+            const line
+            of lines
+        ) {
+
+            const parts =
+                line
+                    .split(",")
+                    .map(
+                        part =>
+                            part.trim()
+                    );
+
+
+            if (
+                parts.length !== 3
+            ) {
+
+                throw new Error(
+                    `Invalid transition "${line}". Use state,symbol,destination.`
+                );
+
+            }
+
+
+            const state =
+                parts[0];
+
+            const symbol =
+                parts[1];
+
+            const destination =
+                parts[2];
+
+
+            if (
+                !states.includes(state)
+            ) {
+
+                throw new Error(
+                    `Unknown state "${state}".`
+                );
+
+            }
+
+
+            if (
+                !alphabet.includes(symbol)
+            ) {
+
+                throw new Error(
+                    `Unknown alphabet symbol "${symbol}".`
+                );
+
+            }
+
+
+            if (
+                !destination ||
+                destination.includes("|")
+            ) {
+
+                throw new Error(
+                    `DFA transition δ(${state}, ${symbol}) must have exactly one destination state.`
+                );
+
+            }
+
+
+            if (
+                !states.includes(
+                    destination
+                )
+            ) {
+
+                throw new Error(
+                    `Unknown destination state "${destination}".`
+                );
+
+            }
+
+
+            transitions[state][symbol] =
+                destination;
+
+        }
+
+
+        /* =========================
+           CHECK COMPLETENESS
+        ========================= */
+
+        states.forEach(
+            state => {
+
+                alphabet.forEach(
+                    symbol => {
+
+                        if (
+                            !(
+                                symbol
+                                in
+                                transitions[state]
+                            )
+                        ) {
+
+                            throw new Error(
+                                `Missing transition: δ(${state}, ${symbol})`
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+        /* =========================
+           REQUEST
+        ========================= */
+
+        const requestData = {
+
+            states:
+
+                states,
+
+            alphabet:
+
+                alphabet,
+
+            transitions:
+
+                transitions,
+
+            start_state:
+
+                startState,
+
+            final_states:
+
+                finalStates,
+
+            input:
+
+                input
+
+        };
+
+
+        const result =
+            document.getElementById(
+                "result"
+            );
+
+
+        result.style.display =
+            "block";
+
+
+        result.className =
+            "result";
+
+
+        result.innerHTML =
+            "⏳ Simulating DFA...";
+
+
+        /* =========================
+           SEND TO FASTAPI
+        ========================= */
+
+        const response =
+            await fetch(
+                `${BACKEND_URL}/dfa/simulate`,
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify(
+                            requestData
+                        )
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.detail
+                    ? JSON.stringify(
+                        data.detail
+                    )
+                    : "DFA simulation failed."
+            );
+
+        }
+
+
+        displayResult(
+            data,
+            input
+        );
+
+
+        drawDFA(
+            states,
+            transitions,
+            startState,
+            finalStates
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+        showError(
+            error.message
+        );
+
+    }
+
+}
+
+
+/* =========================
+   DISPLAY RESULT
+========================= */
+
+function displayResult(
+    data,
+    rawInput
+) {
+
+    const result =
+        document.getElementById(
+            "result"
+        );
+
+
+    result.style.display =
+        "block";
+
+
+    if (data.accepted) {
+
+        result.className =
+            "result accepted";
+
+
+        result.innerHTML = `
+
+            <div class="result-title">
+                ✅ ACCEPTED
+            </div>
+
+            <p>
+
+                <strong>
+                    Input:
+                </strong>
+
+                ${escapeHTML(
+                    data.input || "ε"
+                )}
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Final State:
+                </strong>
+
+                ${escapeHTML(
+                    data.final_state
+                )}
+
+            </p>
+
+
+            <div class="execution">
+
+                <strong>
+                    Execution Path:
+                </strong>
+
+                ${buildExecutionPath(
+                    data.path,
+                    rawInput
+                )}
+
+            </div>
+
+        `;
+
+    }
+
+    else {
+
+        result.className =
+            "result rejected";
+
+
+        result.innerHTML = `
+
+            <div class="result-title">
+                ❌ REJECTED
+            </div>
+
+
+            <p>
+
+                <strong>
+                    Input:
+                </strong>
+
+                ${escapeHTML(
+                    data.input || rawInput || "ε"
+                )}
+
+            </p>
+
+
+            ${
+                data.reason
+                ?
+                `
+                    <p>
+
+                        <strong>
+                            Reason:
+                        </strong>
+
+                        ${escapeHTML(
+                            data.reason
+                        )}
+
+                    </p>
+                `
+                :
+                ""
+            }
+
+
+            ${
+                data.final_state
+                ?
+                `
+                    <p>
+
+                        <strong>
+                            Final State:
+                        </strong>
+
+                        ${escapeHTML(
+                            data.final_state
+                        )}
+
+                    </p>
+                `
+                :
+                ""
+            }
+
+
+            <div class="execution">
+
+                <strong>
+                    Execution Path:
+                </strong>
+
+                ${buildExecutionPath(
+                    data.path,
+                    rawInput
+                )}
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* =========================
+   EXECUTION PATH
+========================= */
+
+function buildExecutionPath(
+    path,
+    rawInput
+) {
+
+    if (
+        !path ||
+        path.length === 0
+    ) {
+
+        return `
+            <p>
+                No execution path available.
+            </p>
+        `;
+
+    }
+
+
+    const symbols =
+        Array.from(
+            rawInput || ""
+        );
+
+
+    return path
+        .map(
+            (state, index) => {
+
+                return `
+
+                    <div class="step">
+
+                        <div class="step-number">
+
+                            Step ${index}
+
+                        </div>
+
+
+                        <div class="step-input">
+
+                            ${
+                                index === 0
+                                ? "Start"
+                                : escapeHTML(
+                                    symbols[index - 1] || "Input"
+                                )
+                            }
+
+                        </div>
+
+
+                        <div class="step-states">
+
+                            ${escapeHTML(
+                                state
+                            )}
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+        )
+        .join("");
+
+}
+
+
+/* =========================
+   SVG ELEMENT
+========================= */
+
+function createSVGElement(
+    tag,
+    attributes = {}
+) {
+
+    const element =
+        document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            tag
+        );
+
+
+    Object.entries(
+        attributes
+    ).forEach(
+        ([key, value]) => {
+
+            element.setAttribute(
+                key,
+                value
+            );
+
+        }
+    );
+
+
+    return element;
+
+}
+
+
+/* =========================
+   TEXT
+========================= */
+
+function addText(
+    svg,
+    text,
+    x,
+    y,
+    attributes = {}
+) {
+
+    const element =
+        createSVGElement(
+            "text",
+            {
+                x,
+                y,
+                ...attributes
+            }
+        );
+
+
+    element.textContent =
+        text;
+
+
+    svg.appendChild(
+        element
+    );
+
+
+    return element;
+
+}
+
+
+/* =========================
+   ARROW MARKER
+========================= */
+
+function setupMarker(svg) {
+
+    const defs =
+        createSVGElement(
+            "defs"
+        );
+
+
+    const marker =
+        createSVGElement(
+            "marker",
+            {
+
+                id:
+                    "dfaArrow",
+
+                markerWidth:
+                    "10",
+
+                markerHeight:
+                    "10",
+
+                refX:
+                    "9",
+
+                refY:
+                    "3",
+
+                orient:
+                    "auto",
+
+                markerUnits:
+                    "strokeWidth"
+
+            }
+        );
+
+
+    const path =
+        createSVGElement(
+            "path",
+            {
+
+                d:
+                    "M0,0 L0,6 L9,3 z",
+
+                fill:
+                    "#94a3b8"
+
+            }
+        );
+
+
+    marker.appendChild(
+        path
+    );
+
+
+    defs.appendChild(
+        marker
+    );
+
+
+    svg.appendChild(
+        defs
+    );
+
+}
+
+
+/* =========================
+   DRAW DFA
+========================= */
+
+function drawDFA(
+    states,
+    transitions,
+    startState,
+    finalStates
+) {
+
+    const container =
+        document.getElementById(
+            "diagram"
+        );
+
+
+    container.innerHTML =
+        "";
+
+
+    const svg =
+        createSVGElement(
+            "svg",
+            {
+
+                viewBox:
+                    "0 0 1000 400",
+
+                role:
+                    "img"
+
+            }
+        );
+
+
+    setupMarker(
+        svg
+    );
+
+
+    const positions =
+        calculatePositions(
+            states
+        );
+
+
+    /*
+       Group transitions between
+       the same two states.
+    */
+
+    const grouped = {};
+
+
+    states.forEach(
+        state => {
+
+            const stateTransitions =
+                transitions[state] || {};
+
+
+            Object.entries(
+                stateTransitions
+            ).forEach(
+                ([symbol, destination]) => {
+
+                    if (!destination) {
+                        return;
+                    }
+
+                    const key =
+                        `${state}__${destination}`;
+
+
+                    if (
+                        !grouped[key]
+                    ) {
+
+                        grouped[key] =
+                            {
+                                from:
+                                    state,
+
+                                to:
+                                    destination,
+
+                                symbols:
+                                    []
+                            };
+
+                    }
+
+
+                    grouped[key]
+                        .symbols
+                        .push(symbol);
+
+                }
+            );
+
+        }
+    );
+
+
+    /* EDGES */
+
+    Object.values(
+        grouped
+    ).forEach(
+        edge => {
+
+            if (
+                positions[edge.from] &&
+                positions[edge.to]
+            ) {
+
+                const reverseKey =
+                    `${edge.to}__${edge.from}`;
+
+                const hasReverse =
+                    edge.from !== edge.to &&
+                    Boolean(grouped[reverseKey]);
+
+                drawEdge(
+                    svg,
+
+                    positions[edge.from],
+
+                    positions[edge.to],
+
+                    edge.symbols.join(","),
+
+                    edge.from ===
+                        edge.to,
+
+                    hasReverse
+                );
+
+            }
+
+        }
+    );
+
+
+    /* START ARROW */
+
+    if (
+        positions[startState]
+    ) {
+
+        const p =
+            positions[startState];
+
+
+        const line =
+            createSVGElement(
+                "line",
+                {
+
+                    x1:
+                        p.x - 75,
+
+                    y1:
+                        p.y,
+
+                    x2:
+                        p.x - 42,
+
+                    y2:
+                        p.y,
+
+                    stroke:
+                        "#60a5fa",
+
+                    "stroke-width":
+                        "2.5",
+
+                    "marker-end":
+                        "url(#dfaArrow)"
+
+                }
+            );
+
+
+        svg.appendChild(
+            line
+        );
+
+
+        addText(
+            svg,
+
+            "start",
+
+            p.x - 74,
+
+            p.y - 10,
+
+            {
+
+                fill:
+                    "#60a5fa",
+
+                "font-size":
+                    "13",
+
+                "text-anchor":
+                    "middle"
+
+            }
+        );
+
+    }
+
+
+    /* STATES */
+
+    states.forEach(
+        state => {
+
+            const p =
+                positions[state];
+
+
+            if (!p) {
+                return;
+            }
+
+
+            const isFinal =
+                finalStates.includes(
+                    state
+                );
+
+
+            const circle =
+                createSVGElement(
+                    "circle",
+                    {
+
+                        cx:
+                            p.x,
+
+                        cy:
+                            p.y,
+
+                        r:
+                            "38",
+
+                        fill:
+                            "#0f172a",
+
+                        stroke:
+                            isFinal
+                            ? "#22c55e"
+                            : "#60a5fa",
+
+                        "stroke-width":
+                            "3"
+
+                    }
+                );
+
+
+            svg.appendChild(
+                circle
+            );
+
+
+            if (
+                isFinal
+            ) {
+
+                const inner =
+                    createSVGElement(
+                        "circle",
+                        {
+
+                            cx:
+                                p.x,
+
+                            cy:
+                                p.y,
+
+                            r:
+                                "31",
+
+                            fill:
+                                "none",
+
+                            stroke:
+                                "#22c55e",
+
+                            "stroke-width":
+                                "2"
+
+                        }
+                    );
+
+
+                svg.appendChild(
+                    inner
+                );
+
+            }
+
+
+            addText(
+                svg,
+
+                state,
+
+                p.x,
+
+                p.y + 6,
+
+                {
+
+                    fill:
+                        "#f8fafc",
+
+                    "font-size":
+                        "16",
+
+                    "font-weight":
+                        "bold",
+
+                    "text-anchor":
+                        "middle"
+
+                }
+            );
+
+        }
+    );
+
+
+    container.appendChild(
+        svg
+    );
+
+}
+
+
+/* =========================
+   DRAW EDGE
+========================= */
+
+function drawEdge(
+    svg,
+    from,
+    to,
+    label,
+    selfLoop,
+    hasReverse
+) {
+
+    /* SELF LOOP */
+
+    if (selfLoop) {
+
+        const path =
+            createSVGElement(
+                "path",
+                {
+
+                    d: `
+                        M ${from.x - 25}
+                          ${from.y - 30}
+
+                        C ${from.x - 85}
+                          ${from.y - 105},
+
+                          ${from.x + 85}
+                          ${from.y - 105},
+
+                          ${from.x + 25}
+                          ${from.y - 30}
+                    `,
+
+                    fill:
+                        "none",
+
+                    stroke:
+                        "#94a3b8",
+
+                    "stroke-width":
+                        "2",
+
+                    "marker-end":
+                        "url(#dfaArrow)"
+
+                }
+            );
+
+
+        svg.appendChild(
+            path
+        );
+
+
+        addText(
+            svg,
+
+            label,
+
+            from.x,
+
+            from.y - 78,
+
+            {
+
+                fill:
+                    "#f8fafc",
+
+                "font-size":
+                    "14",
+
+                "font-weight":
+                    "bold",
+
+                "text-anchor":
+                    "middle"
+
+            }
+        );
+
+
+        return;
+
+    }
+
+
+    const angle =
+        Math.atan2(
+            to.y - from.y,
+            to.x - from.x
+        );
+
+
+    const startX =
+        from.x +
+        Math.cos(angle) * 40;
+
+
+    const startY =
+        from.y +
+        Math.sin(angle) * 40;
+
+
+    const endX =
+        to.x -
+        Math.cos(angle) * 40;
+
+
+    const endY =
+        to.y -
+        Math.sin(angle) * 40;
+
+
+    if (hasReverse) {
+
+        const dx =
+            endX - startX;
+
+        const dy =
+            endY - startY;
+
+        const len =
+            Math.hypot(dx, dy) || 1;
+
+        const nx =
+            -dy / len;
+
+        const ny =
+            dx / len;
+
+        const curveOffset = 34;
+
+        const ctrlX =
+            (startX + endX) / 2 +
+            nx * curveOffset;
+
+        const ctrlY =
+            (startY + endY) / 2 +
+            ny * curveOffset;
+
+        const path =
+            createSVGElement(
+                "path",
+                {
+
+                    d: `M ${startX} ${startY} Q ${ctrlX} ${ctrlY} ${endX} ${endY}`,
+
+                    fill:
+                        "none",
+
+                    stroke:
+                        "#94a3b8",
+
+                    "stroke-width":
+                        "2",
+
+                    "marker-end":
+                        "url(#dfaArrow)"
+
+                }
+            );
+
+        svg.appendChild(
+            path
+        );
+
+        const labelX =
+            0.25 * startX +
+            0.5 * ctrlX +
+            0.25 * endX +
+            nx * 10;
+
+        const labelY =
+            0.25 * startY +
+            0.5 * ctrlY +
+            0.25 * endY +
+            ny * 10;
+
+        addText(
+            svg,
+
+            label,
+
+            labelX,
+
+            labelY,
+
+            {
+
+                fill:
+                    "#f8fafc",
+
+                "font-size":
+                    "14",
+
+                "font-weight":
+                    "bold",
+
+                "text-anchor":
+                    "middle"
+
+            }
+        );
+
+        return;
+
+    }
+
+
+    const line =
+        createSVGElement(
+            "line",
+            {
+
+                x1:
+                    startX,
+
+                y1:
+                    startY,
+
+                x2:
+                    endX,
+
+                y2:
+                    endY,
+
+                stroke:
+                    "#94a3b8",
+
+                "stroke-width":
+                    "2",
+
+                "marker-end":
+                    "url(#dfaArrow)"
+
+            }
+        );
+
+
+    svg.appendChild(
+        line
+    );
+
+
+    const midX =
+        (startX + endX) / 2;
+
+
+    const midY =
+        (startY + endY) / 2 - 8;
+
+
+    addText(
+        svg,
+
+        label,
+
+        midX,
+
+        midY,
+
+        {
+
+            fill:
+                "#f8fafc",
+
+            "font-size":
+                "14",
+
+            "font-weight":
+                "bold",
+
+            "text-anchor":
+                "middle"
+
+        }
+    );
+
+}
+
+
+/* =========================
+   CALCULATE POSITIONS
+========================= */
+
+function calculatePositions(
+    states
+) {
+
+    const positions = {};
+
+
+    const width = 1000;
+
+    const height = 400;
+
+
+    const centerX =
+        width / 2;
+
+
+    const centerY =
+        height / 2;
+
+
+    if (
+        states.length === 0
+    ) {
+
+        return positions;
+
+    }
+
+
+    const radius =
+        Math.min(
+            300,
+
+            100 +
+            states.length * 30
+        );
+
+
+    states.forEach(
+        (state, index) => {
+
+            const angle =
+                -Math.PI / 2 +
+                (
+                    2 *
+                    Math.PI *
+                    index
+                ) /
+                states.length;
+
+
+            positions[state] = {
+
+                x:
+                    centerX +
+                    radius *
+                    Math.cos(
+                        angle
+                    ),
+
+                y:
+                    centerY +
+                    radius *
+                    0.58 *
+                    Math.sin(
+                        angle
+                    )
+
+            };
+
+        }
+    );
+
+
+    return positions;
+
+}
+
+
+/* =========================
+   INITIAL DIAGRAM
+========================= */
+
+window.addEventListener(
+    "load",
+    () => {
+
+        drawDFA(
+
+            ["q0", "q1", "q2"],
+
+            {
+
+                q0: {
+
+                    "a": "q1",
+
+                    "b": "q0"
+
+                },
+
+                q1: {
+
+                    "a": "q1",
+
+                    "b": "q2"
+
+                },
+
+                q2: {
+
+                    "a": "q1",
+
+                    "b": "q0"
+
+                }
+
+            },
+
+            "q0",
+
+            ["q2"]
+
+        );
+
+    }
+);
+
 </script>
+
+
 </body>
+
 </html>
