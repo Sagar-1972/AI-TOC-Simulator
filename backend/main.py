@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -28,7 +28,7 @@ app.add_middleware(
 
 
 # =========================
-# DFA REQUEST
+# REQUEST MODELS
 # =========================
 
 class DFASimulationRequest(BaseModel):
@@ -40,10 +40,6 @@ class DFASimulationRequest(BaseModel):
     input: str
 
 
-# =========================
-# NFA REQUEST
-# =========================
-
 class NFASimulationRequest(BaseModel):
     states: list[str]
     alphabet: list[str]
@@ -52,10 +48,6 @@ class NFASimulationRequest(BaseModel):
     final_states: list[str]
     input: str
 
-
-# =========================
-# ε-NFA REQUEST
-# =========================
 
 class ENFASimulationRequest(BaseModel):
     states: list[str]
@@ -67,10 +59,12 @@ class ENFASimulationRequest(BaseModel):
 
 
 # =========================
-# ROOT
+# HEALTH / ROOT
 # =========================
 
-@app.get("/")
+@app.get("/api")
+@app.get("/api/")
+@app.get("/api/health")
 def root():
     return {
         "message": "AI-TOC Simulator API is running"
@@ -81,51 +75,57 @@ def root():
 # DFA SIMULATION
 # =========================
 
+@app.post("/api/dfa/simulate")
 @app.post("/dfa/simulate")
 def simulate_dfa(request: DFASimulationRequest):
-
-    dfa = DFA(
-        states=request.states,
-        alphabet=request.alphabet,
-        transitions=request.transitions,
-        start_state=request.start_state,
-        final_states=request.final_states
-    )
-
-    return dfa.simulate(request.input)
+    try:
+        dfa = DFA(
+            states=request.states,
+            alphabet=request.alphabet,
+            transitions=request.transitions,
+            start_state=request.start_state,
+            final_states=request.final_states
+        )
+        return dfa.simulate(request.input)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
 
 
 # =========================
 # NFA SIMULATION
 # =========================
 
+@app.post("/api/nfa/simulate")
 @app.post("/nfa/simulate")
 def simulate_nfa(request: NFASimulationRequest):
-
-    nfa = NFA(
-        states=request.states,
-        alphabet=request.alphabet,
-        transitions=request.transitions,
-        start_state=request.start_state,
-        final_states=request.final_states
-    )
-
-    return nfa.simulate(request.input)
+    try:
+        nfa = NFA(
+            states=request.states,
+            alphabet=request.alphabet,
+            transitions=request.transitions,
+            start_state=request.start_state,
+            final_states=request.final_states
+        )
+        return nfa.simulate(request.input)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
 
 
 # =========================
 # ε-NFA SIMULATION
 # =========================
 
+@app.post("/api/enfa/simulate")
 @app.post("/enfa/simulate")
 def simulate_enfa(request: ENFASimulationRequest):
-
-    enfa = ENFA(
-        states=request.states,
-        alphabet=request.alphabet,
-        transitions=request.transitions,
-        start_state=request.start_state,
-        final_states=request.final_states
-    )
-
-    return enfa.simulate(request.input)
+    try:
+        enfa = ENFA(
+            states=request.states,
+            alphabet=request.alphabet,
+            transitions=request.transitions,
+            start_state=request.start_state,
+            final_states=request.final_states
+        )
+        return enfa.simulate(request.input)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
