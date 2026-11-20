@@ -3,635 +3,263 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>AI-TOC Simulator</title>
-
     <style>
-
-        * {
-            box-sizing: border-box;
-        }
-
+        * { box-sizing: border-box; }
         body {
             margin: 0;
             min-height: 100vh;
-
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-
-            background:
-                radial-gradient(
-                    circle at top,
-                    #1e3a8a 0%,
-                    #0f172a 45%,
-                    #020617 100%
-                );
-
+            font-family: Arial, Helvetica, sans-serif;
+            background: radial-gradient(circle at top, #1e3a8a 0%, #0f172a 45%, #020617 100%);
             color: #f8fafc;
         }
-
-        /* =========================
-           HEADER
-        ========================= */
-
         header {
             text-align: center;
-            padding: 55px 20px 25px;
+            padding: 50px 20px 20px;
         }
-
         header h1 {
             margin: 0;
-
             font-size: 42px;
             font-weight: 800;
-
-            background:
-                linear-gradient(
-                    90deg,
-                    #60a5fa,
-                    #a78bfa,
-                    #fb923c
-                );
-
+            background: linear-gradient(90deg, #60a5fa, #a78bfa, #fb923c, #34d399);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-
         header p {
             margin-top: 12px;
-
             color: #cbd5e1;
-
             font-size: 17px;
         }
-
-        /* =========================
-           CENTER MENU
-        ========================= */
-
         .menu {
             display: flex;
-
             justify-content: center;
             align-items: center;
-
             flex-wrap: wrap;
-
-            gap: 10px;
-
-            margin: 15px auto 45px;
-
+            gap: 8px;
+            margin: 15px auto 40px;
             width: fit-content;
-
+            max-width: 95%;
             padding: 8px;
-
-            background: rgba(15, 23, 42, 0.8);
-
+            background: rgba(15, 23, 42, 0.85);
             border: 1px solid #334155;
-
             border-radius: 50px;
-
             backdrop-filter: blur(10px);
         }
-
         .menu a {
             text-decoration: none;
-
             color: #cbd5e1;
-
-            padding: 11px 20px;
-
+            padding: 10px 16px;
             border-radius: 30px;
-
             font-weight: 600;
-
+            font-size: 14px;
             transition: 0.25s;
         }
-
         .menu a:hover {
             background: #1e293b;
-
             color: white;
-
             transform: translateY(-2px);
         }
-
         .menu .active {
             background: #2563eb;
-
             color: white;
-
-            box-shadow:
-                0 5px 18px
-                rgba(37, 99, 235, 0.35);
+            box-shadow: 0 5px 18px rgba(37, 99, 235, 0.35);
         }
-
-        /* =========================
-           MAIN
-        ========================= */
-
         .container {
-            width: min(1100px, 92%);
-
+            width: min(1180px, 92%);
             margin: auto;
-
             padding-bottom: 60px;
         }
-
         .hero {
             text-align: center;
-
             max-width: 850px;
-
-            margin: 0 auto 45px;
+            margin: 0 auto 40px;
         }
-
-        .hero h2 {
-            font-size: 31px;
-
-            margin-bottom: 14px;
-        }
-
-        .hero p {
+        .hero h2 { font-size: 31px; margin-bottom: 14px; }
+        .hero p { color: #94a3b8; line-height: 1.7; font-size: 16px; }
+        .section-label {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
             color: #94a3b8;
-
-            line-height: 1.7;
-
-            font-size: 16px;
+            margin: 32px 0 14px;
+            font-weight: 700;
         }
-
-        /* =========================
-           SIMULATOR CARDS
-        ========================= */
-
         .cards {
             display: grid;
-
-            grid-template-columns:
-                repeat(3, 1fr);
-
-            gap: 22px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
         }
-
+        .cards.four {
+            grid-template-columns: repeat(4, 1fr);
+        }
         .card {
             position: relative;
-
-            background:
-                rgba(15, 23, 42, 0.88);
-
-            border:
-                1px solid #334155;
-
+            background: rgba(15, 23, 42, 0.88);
+            border: 1px solid #334155;
             border-radius: 18px;
-
-            padding: 28px 24px;
-
+            padding: 26px 22px;
             text-align: center;
-
             transition: 0.3s;
-
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
-
         .card:hover {
-            transform: translateY(-7px);
-
+            transform: translateY(-6px);
             border-color: #64748b;
-
-            box-shadow:
-                0 18px 40px
-                rgba(0, 0, 0, 0.3);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
         }
-
-        .icon {
-            font-size: 45px;
-
-            margin-bottom: 15px;
-        }
-
-        .card h3 {
-            font-size: 24px;
-
-            margin: 8px 0 12px;
-        }
-
-        .card p {
-            color: #94a3b8;
-
-            line-height: 1.6;
-
-            min-height: 75px;
-        }
-
+        .icon { font-size: 42px; margin-bottom: 12px; }
+        .card h3 { font-size: 22px; margin: 6px 0 10px; }
+        .card p { color: #94a3b8; line-height: 1.55; font-size: 14px; margin: 0 0 16px; }
         .card a {
             display: inline-block;
-
-            margin-top: 15px;
-
-            padding: 11px 22px;
-
+            padding: 10px 20px;
             border-radius: 9px;
-
             text-decoration: none;
-
             color: white;
-
             font-weight: bold;
-
+            font-size: 14px;
             transition: 0.2s;
         }
+        .dfa { border-top: 4px solid #60a5fa; }
+        .dfa h3 { color: #60a5fa; }
+        .dfa a { background: #2563eb; }
+        .dfa a:hover { background: #1d4ed8; }
 
-        .dfa {
-            border-top: 4px solid #60a5fa;
-        }
+        .nfa { border-top: 4px solid #a78bfa; }
+        .nfa h3 { color: #a78bfa; }
+        .nfa a { background: #7c3aed; }
+        .nfa a:hover { background: #6d28d9; }
 
-        .dfa h3 {
-            color: #60a5fa;
-        }
+        .enfa { border-top: 4px solid #fb923c; }
+        .enfa h3 { color: #fb923c; }
+        .enfa a { background: #ea580c; }
+        .enfa a:hover { background: #c2410c; }
 
-        .dfa a {
-            background: #2563eb;
-        }
+        .conv { border-top: 4px solid #2dd4bf; }
+        .conv h3 { color: #2dd4bf; }
+        .conv a { background: #0d9488; }
+        .conv a:hover { background: #0f766e; }
 
-        .dfa a:hover {
-            background: #1d4ed8;
-        }
+        .pda { border-top: 4px solid #f472b6; }
+        .pda h3 { color: #f472b6; }
+        .pda a { background: #db2777; }
+        .pda a:hover { background: #be185d; }
 
-        .nfa {
-            border-top: 4px solid #a78bfa;
-        }
+        .tm { border-top: 4px solid #34d399; }
+        .tm h3 { color: #34d399; }
+        .tm a { background: #059669; }
+        .tm a:hover { background: #047857; }
 
-        .nfa h3 {
-            color: #a78bfa;
-        }
-
-        .nfa a {
-            background: #7c3aed;
-        }
-
-        .nfa a:hover {
-            background: #6d28d9;
-        }
-
-        .enfa {
-            border-top: 4px solid #fb923c;
-        }
-
-        .enfa h3 {
-            color: #fb923c;
-        }
-
-        .enfa a {
-            background: #ea580c;
-        }
-
-        .enfa a:hover {
-            background: #c2410c;
-        }
-
-        /* =========================
-           FEATURES
-        ========================= */
-
-        .features {
-            margin-top: 55px;
-
-            text-align: center;
-        }
-
-        .features h2 {
-            margin-bottom: 25px;
-        }
-
-        .feature-grid {
-            display: grid;
-
-            grid-template-columns:
-                repeat(4, 1fr);
-
-            gap: 15px;
-        }
-
-        .feature {
-            background: rgba(15, 23, 42, 0.7);
-
-            border: 1px solid #1e293b;
-
-            border-radius: 12px;
-
-            padding: 18px;
-        }
-
-        .feature strong {
-            display: block;
-
-            margin-bottom: 6px;
-        }
-
-        .feature span {
-            color: #94a3b8;
-
-            font-size: 13px;
-        }
-
-        /* =========================
-           FOOTER
-        ========================= */
+        .ai { border-top: 4px solid #facc15; }
+        .ai h3 { color: #facc15; }
+        .ai a { background: #ca8a04; }
+        .ai a:hover { background: #a16207; }
 
         footer {
             text-align: center;
-
             padding: 25px;
-
             color: #64748b;
-
-            border-top:
-                1px solid #1e293b;
+            border-top: 1px solid #1e293b;
         }
-
-        /* =========================
-           RESPONSIVE
-        ========================= */
-
-        @media (max-width: 900px) {
-
-            .cards {
-                grid-template-columns: 1fr;
-            }
-
-            .feature-grid {
-                grid-template-columns:
-                    repeat(2, 1fr);
-            }
-
+        @media (max-width: 1000px) {
+            .cards, .cards.four { grid-template-columns: repeat(2, 1fr); }
         }
-
-        @media (max-width: 600px) {
-
-            header h1 {
-                font-size: 31px;
-            }
-
-            .menu {
-                border-radius: 15px;
-            }
-
-            .menu a {
-                padding: 9px 13px;
-            }
-
-            .feature-grid {
-                grid-template-columns: 1fr;
-            }
-
+        @media (max-width: 650px) {
+            header h1 { font-size: 31px; }
+            .cards, .cards.four { grid-template-columns: 1fr; }
         }
-
     </style>
 </head>
-
-
 <body>
-
-
-<!-- =========================
-     HEADER
-========================= -->
-
 <header>
-
     <h1>🤖 AI-TOC Simulator</h1>
-
-    <p>
-        Interactive Theory of Computation Learning Platform
-    </p>
-
+    <p>Interactive Theory of Computation Learning Platform</p>
 </header>
 
-
-<!-- =========================
-     CENTER MENU
-========================= -->
-
 <nav class="menu">
-
-    <a
-        href="index.html"
-        class="active"
-    >
-        🏠 Home
-    </a>
-
-    <a href="dfa.html">
-        🔵 DFA
-    </a>
-
-    <a href="nfa.html">
-        🟣 NFA
-    </a>
-
-    <a href="enfa.html">
-        🟠 ε-NFA
-    </a>
-
+    <a href="index.html" class="active">🏠 Home</a>
+    <a href="dfa.html" >🔵 DFA</a>
+    <a href="nfa.html" >🟣 NFA</a>
+    <a href="enfa.html" >🟠 ε-NFA</a>
+    <a href="conversions.html" >🔄 Conversions</a>
+    <a href="pda.html" >📚 PDA</a>
+    <a href="tm.html" >🎞️ Turing Machine</a>
+    <a href="ai-assistant.html" >✨ AI Studio</a>
 </nav>
-
-
-<!-- =========================
-     MAIN
-========================= -->
-
 <main class="container">
-
-
     <section class="hero">
-
-        <h2>
-            Learn Theory of Computation Interactively
-        </h2>
-
-        <p>
-            Build automata, simulate input strings,
-            visualize state transitions, and understand
-            how formal languages and finite automata work
-            through an interactive environment.
-        </p>
-
+        <h2>Learn Theory of Computation Interactively</h2>
+        <p>Build automata, step through live state transitions on interactive diagrams, convert between formal models, simulate Pushdown Automata and Turing Machines, and generate machines with Gemini AI.</p>
     </section>
 
-
-    <!-- =========================
-         SIMULATOR CARDS
-    ========================= -->
-
+    <div class="section-label">Finite Automata (Interactive Step-by-Step Graph Highlighting)</div>
     <section class="cards">
-
-
-        <!-- DFA -->
-
         <div class="card dfa">
-
-            <div class="icon">
-                🔵
+            <div>
+                <div class="icon">🔵</div>
+                <h3>DFA Simulator</h3>
+                <p>Construct and simulate Deterministic Finite Automata with live node-by-node graph highlighting and execution traces.</p>
             </div>
-
-            <h3>
-                DFA Simulator
-            </h3>
-
-            <p>
-                Construct and simulate Deterministic
-                Finite Automata with interactive state
-                diagrams and execution paths.
-            </p>
-
-            <a href="dfa.html">
-                Open DFA →
-            </a>
-
+            <a href="dfa.html">Open DFA →</a>
         </div>
-
-
-        <!-- NFA -->
-
         <div class="card nfa">
-
-            <div class="icon">
-                🟣
+            <div>
+                <div class="icon">🟣</div>
+                <h3>NFA Simulator</h3>
+                <p>Explore nondeterministic branching across active state sets with interactive step playback and transition diagrams.</p>
             </div>
-
-            <h3>
-                NFA Simulator
-            </h3>
-
-            <p>
-                Explore nondeterministic automata,
-                multiple possible states, and
-                nondeterministic execution paths.
-            </p>
-
-            <a href="nfa.html">
-                Open NFA →
-            </a>
-
+            <a href="nfa.html">Open NFA →</a>
         </div>
-
-
-        <!-- ε-NFA -->
-
         <div class="card enfa">
-
-            <div class="icon">
-                🟠
+            <div>
+                <div class="icon">🟠</div>
+                <h3>ε-NFA Simulator</h3>
+                <p>Trace epsilon-closures and spontaneous transitions step by step with highlighted active state subsets.</p>
             </div>
-
-            <h3>
-                ε-NFA Simulator
-            </h3>
-
-            <p>
-                Work with epsilon transitions,
-                epsilon-closure, and automata that
-                move without consuming input.
-            </p>
-
-            <a href="enfa.html">
-                Open ε-NFA →
-            </a>
-
+            <a href="enfa.html">Open ε-NFA →</a>
         </div>
-
-
     </section>
 
-
-    <!-- =========================
-         FEATURES
-    ========================= -->
-
-    <section class="features">
-
-        <h2>
-            🚀 Platform Features
-        </h2>
-
-
-        <div class="feature-grid">
-
-            <div class="feature">
-
-                <strong>
-                    ⚙️ Automata Simulation
-                </strong>
-
-                <span>
-                    Execute input strings step by step.
-                </span>
-
+    <div class="section-label">Conversions, Advanced Automata & AI Studio</div>
+    <section class="cards four">
+        <div class="card conv">
+            <div>
+                <div class="icon">🔄</div>
+                <h3>TOC Conversions</h3>
+                <p>Convert ε-NFA → NFA, NFA → DFA (Subset Construction), Minimize DFA states, and compile Regex → ε-NFA.</p>
             </div>
-
-
-            <div class="feature">
-
-                <strong>
-                    📊 State Diagrams
-                </strong>
-
-                <span>
-                    Visualize automata and transitions.
-                </span>
-
-            </div>
-
-
-            <div class="feature">
-
-                <strong>
-                    🧠 TOC Algorithms
-                </strong>
-
-                <span>
-                    Learn important computation concepts.
-                </span>
-
-            </div>
-
-
-            <div class="feature">
-
-                <strong>
-                    🤖 AI Integration
-                </strong>
-
-                <span>
-                    Intelligent problem interpretation
-                    and explanations.
-                </span>
-
-            </div>
-
+            <a href="conversions.html">Open Conversions →</a>
         </div>
-
+        <div class="card pda">
+            <div>
+                <div class="icon">📚</div>
+                <h3>PDA Simulator</h3>
+                <p>Simulate Pushdown Automata for context-free languages with live stack frames and acceptance modes.</p>
+            </div>
+            <a href="pda.html">Open PDA →</a>
+        </div>
+        <div class="card tm">
+            <div>
+                <div class="icon">🎞️</div>
+                <h3>Turing Machine</h3>
+                <p>Execute single-tape Turing Machines with interactive tape cells, read/write head tracking, and step controls.</p>
+            </div>
+            <a href="tm.html">Open TM →</a>
+        </div>
+        <div class="card ai">
+            <div>
+                <div class="icon">✨</div>
+                <h3>Gemini AI Studio</h3>
+                <p>Describe any formal language in English to auto-generate valid DFA/NFA/ε-NFA definitions and explanations.</p>
+            </div>
+            <a href="ai-assistant.html">Open AI Studio →</a>
+        </div>
     </section>
-
-
 </main>
-
-
-<!-- =========================
-     FOOTER
-========================= -->
-
 <footer>
-
-    AI-TOC Simulator
-    <br>
-
-    Theory of Computation Learning Platform
-
+    AI-TOC Simulator — Theory of Computation Learning Platform
 </footer>
-
-
 </body>
 </html>

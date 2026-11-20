@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDA Simulator | AI-TOC Simulator</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #0f172a; color: #e2e8f0; }
+        header {
+            background: linear-gradient(135deg, #111827, #831843);
+            padding: 32px 20px 20px; text-align: center; border-bottom: 1px solid #334155;
+        }
+        header h1 { margin: 0 0 8px; font-size: 32px; }
+        header p { margin: 0; color: #cbd5e1; }
+        .menu {
+            display: flex; justify-content: center; align-items: center; flex-wrap: wrap;
+            gap: 8px; width: fit-content; max-width: 95%; margin: 18px auto 25px;
+            padding: 7px; background: #111827; border: 1px solid #334155; border-radius: 50px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+        }
+        .menu a {
+            text-decoration: none; color: #cbd5e1; padding: 10px 16px;
+            border-radius: 30px; font-weight: 600; font-size: 14px; transition: 0.2s;
+        }
+        .menu a:hover { background: #1e293b; color: white; }
+        .menu .active { background: #db2777; color: white; box-shadow: 0 5px 15px rgba(219,39,119,0.35); }
+        .container { width: min(1150px, 94%); margin: 0 auto 50px; }
+        .page-title { text-align: center; margin: 22px 0; }
+        .page-title h2 { color: #f472b6; font-size: 30px; margin-bottom: 8px; }
+        .page-title p { color: #94a3b8; }
+        .card {
+            background: #111827; border: 1px solid #334155; border-radius: 16px;
+            padding: 24px; box-shadow: 0 12px 30px rgba(0,0,0,0.22);
+        }
+        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+        .full { grid-column: 1 / -1; }
+        label { display: block; margin-bottom: 7px; font-weight: bold; color: #cbd5e1; }
+        input, textarea, select {
+            width: 100%; border: 1px solid #475569; border-radius: 9px; padding: 11px 12px;
+            background: #0f172a; color: #f8fafc; outline: none; font-size: 14px;
+        }
+        input:focus, textarea:focus, select:focus { border-color: #f472b6; }
+        textarea { min-height: 195px; resize: vertical; font-family: Consolas, monospace; }
+        .help { color: #94a3b8; font-size: 12px; margin-top: 6px; line-height: 1.5; }
+        button {
+            width: 100%; border: none; border-radius: 10px; padding: 13px 16px;
+            font-size: 16px; font-weight: bold; cursor: pointer; color: white;
+            background: #db2777; transition: 0.2s;
+        }
+        button:hover { background: #be185d; transform: translateY(-1px); }
+        .result { margin-top: 20px; border-radius: 12px; padding: 18px; display: none; }
+        .accepted { background: #052e16; border: 1px solid #22c55e; }
+        .rejected { background: #450a0a; border: 1px solid #ef4444; }
+        .error { background: #451a03; border: 1px solid #f97316; }
+        .result-title { font-size: 21px; font-weight: bold; margin-bottom: 12px; }
+        .trace-row {
+            display: grid; grid-template-columns: 70px 100px 140px 1fr 180px;
+            gap: 10px; align-items: center; padding: 10px 12px; margin-top: 8px;
+            background: #020617; border: 1px solid #1e293b; border-radius: 8px;
+            font-family: Consolas, monospace; font-size: 13px;
+        }
+        .stack-chips { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
+        .stack-chip {
+            padding: 3px 8px; border-radius: 5px; background: #831843;
+            color: #fbcfe8; border: 1px solid #f472b6; font-weight: bold;
+        }
+        .stack-chip.top { background: #db2777; color: white; }
+        footer { text-align: center; padding: 25px; color: #64748b; border-top: 1px solid #1e293b; }
+        @media (max-width: 850px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .trace-row { grid-template-columns: 1fr; }
+            .stack-chips { justify-content: flex-start; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>🤖 AI-TOC Simulator</h1>
+    <p>Theory of Computation Learning Platform</p>
+</header>
+<nav class="menu">
+    <a href="index.html">🏠 Home</a>
+    <a href="dfa.html">🔵 DFA</a>
+    <a href="nfa.html">🟣 NFA</a>
+    <a href="enfa.html">🟠 ε-NFA</a>
+    <a href="conversions.html">🔄 Conversions</a>
+    <a href="pda.html" class="active">📚 PDA</a>
+    <a href="tm.html">🎞️ Turing Machine</a>
+    <a href="ai-assistant.html">✨ AI Studio</a>
+</nav>
+<main class="container">
+    <section class="page-title">
+        <h2>📚 Pushdown Automaton (PDA) Simulator</h2>
+        <p>Context-free language recognition with live stack frame tracing (Default: L = { aⁿbⁿ | n ≥ 1 })</p>
+    </section>
+
+    <section class="card">
+        <div class="form-grid">
+            <div>
+                <label for="states">States (Q)</label>
+                <input id="states" type="text" value="q0,q1,q2">
+            </div>
+            <div>
+                <label for="inputAlphabet">Input Alphabet (Σ)</label>
+                <input id="inputAlphabet" type="text" value="a,b">
+            </div>
+            <div>
+                <label for="stackAlphabet">Stack Alphabet (Γ)</label>
+                <input id="stackAlphabet" type="text" value="A,Z">
+            </div>
+            <div>
+                <label for="startStack">Initial Stack Symbol (Z₀)</label>
+                <input id="startStack" type="text" value="Z">
+            </div>
+            <div>
+                <label for="startState">Start State (q₀)</label>
+                <input id="startState" type="text" value="q0">
+            </div>
+            <div>
+                <label for="finalStates">Final States (F)</label>
+                <input id="finalStates" type="text" value="q2">
+            </div>
+            <div class="full">
+                <label for="acceptanceMode">Acceptance Mode</label>
+                <select id="acceptanceMode">
+                    <option value="final_state" selected>Acceptance by Final State (q ∈ F)</option>
+                    <option value="empty_stack">Acceptance by Empty Stack (Stack = ε)</option>
+                </select>
+            </div>
+            <div class="full">
+                <label for="transitions">PDA Transition Rules</label>
+                <textarea id="transitions">q0,a,Z -> q0,AZ
+q0,a,A -> q0,AA
+q0,b,A -> q1,ε
+q1,b,A -> q1,ε
+q1,ε,Z -> q2,Z</textarea>
+                <p class="help">
+                    Format per line: <strong>state,input_symbol,stack_top -&gt; next_state,push_string</strong><br>
+                    Use <span style="color:#f472b6;">ε</span> (or <span style="color:#f472b6;">e</span>) for epsilon input, epsilon stack pop, or empty push (pop only). Leftmost character of <code>push_string</code> is pushed on top.
+                </p>
+            </div>
+            <div class="full">
+                <label for="inputString">Input String</label>
+                <input id="inputString" type="text" value="aabb">
+            </div>
+            <div class="full">
+                <button onclick="simulatePDA()">▶ Simulate PDA</button>
+            </div>
+        </div>
+        <div id="result" class="result"></div>
+    </section>
+</main>
+<footer>AI-TOC Simulator — Pushdown Automaton Module</footer>
+
+<script>
+const BACKEND_URL =
+    (window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost")
+        ? "http://127.0.0.1:8000"
+        : "/api";
+
+const parseList = v => v.split(",").map(x => x.trim()).filter(Boolean);
+const esc = v => String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+async function simulatePDA() {
+    const resBox = document.getElementById("result");
+    resBox.style.display = "block";
+    resBox.className = "result";
+    resBox.innerHTML = "⏳ Simulating Pushdown Automaton...";
+
+    try {
+        const states = parseList(document.getElementById("states").value);
+        const input_alphabet = parseList(document.getElementById("inputAlphabet").value);
+        const stack_alphabet = parseList(document.getElementById("stackAlphabet").value);
+        const start_stack = document.getElementById("startStack").value.trim();
+        const start_state = document.getElementById("startState").value.trim();
+        const final_states = parseList(document.getElementById("finalStates").value);
+        const acceptance_mode = document.getElementById("acceptanceMode").value;
+        const input = document.getElementById("inputString").value.trim();
+
+        const transitions = {};
+        const lines = document.getElementById("transitions").value.split("\n").map(l => l.trim()).filter(Boolean);
+        for (const line of lines) {
+            const sides = line.split("->").map(s => s.trim());
+            if (sides.length !== 2) throw new Error(`Invalid rule "${line}". Expected: state,in,top -> next,push`);
+            const lhs = sides[0].split(",").map(s => s.trim());
+            const rhs = sides[1].split(",").map(s => s.trim());
+            if (lhs.length !== 3 || rhs.length !== 2) throw new Error(`Invalid rule format: "${line}"`);
+
+            let [st, inSym, topSym] = lhs;
+            const [next_state, pushRaw] = rhs;
+            if (inSym.toLowerCase() === "e") inSym = "ε";
+            if (topSym.toLowerCase() === "e") topSym = "ε";
+
+            let push = [];
+            if (pushRaw && pushRaw !== "ε" && pushRaw.toLowerCase() !== "e") {
+                push = Array.from(pushRaw);
+            }
+
+            transitions[st] ??= {};
+            transitions[st][inSym] ??= {};
+            transitions[st][inSym][topSym] ??= [];
+            transitions[st][inSym][topSym].push({ next_state, push });
+        }
+
+        const resp = await fetch(`${BACKEND_URL}/pda/simulate`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                states, input_alphabet, stack_alphabet, transitions,
+                start_state, start_stack, final_states, acceptance_mode, input
+            })
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.detail || "PDA simulation failed.");
+
+        resBox.className = data.accepted ? "result accepted" : "result rejected";
+        const traceHtml = (data.trace || []).map(t => {
+            const stackChips = (t.stack && t.stack.length)
+                ? t.stack.map((s, idx) => `<span class="stack-chip ${idx === 0 ? 'top' : ''}">${esc(s)}</span>`).join("")
+                : `<span class="stack-chip">ε (empty)</span>`;
+            return `
+                <div class="trace-row">
+                    <div><strong>Step ${t.step}</strong></div>
+                    <div style="color:#f472b6;">State: <strong>${esc(t.state)}</strong></div>
+                    <div>Rem: <code>${esc(t.remaining_input)}</code></div>
+                    <div>${esc(t.action)}</div>
+                    <div class="stack-chips" title="Leftmost is Stack Top">${stackChips}</div>
+                </div>
+            `;
+        }).join("");
+
+        resBox.innerHTML = `
+            <div class="result-title">${data.accepted ? "✅ ACCEPTED" : "❌ REJECTED"}</div>
+            <p><strong>Input:</strong> ${esc(input || "ε")}</p>
+            ${data.reason ? `<p><strong>Reason:</strong> ${esc(data.reason)}</p>` : ""}
+            <div style="margin-top:14px;"><strong>Configuration & Stack Trace (Leftmost = Stack Top):</strong>${traceHtml}</div>
+        `;
+    } catch (err) {
+        resBox.className = "result error";
+        resBox.innerHTML = `<div class="result-title">⚠️ Error</div><p>${esc(err.message)}</p>`;
+    }
+}
+</script>
+</body>
+</html>

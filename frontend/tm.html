@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turing Machine Simulator | AI-TOC Simulator</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #0f172a; color: #e2e8f0; }
+        header {
+            background: linear-gradient(135deg, #111827, #065f46);
+            padding: 32px 20px 20px; text-align: center; border-bottom: 1px solid #334155;
+        }
+        header h1 { margin: 0 0 8px; font-size: 32px; }
+        header p { margin: 0; color: #cbd5e1; }
+        .menu {
+            display: flex; justify-content: center; align-items: center; flex-wrap: wrap;
+            gap: 8px; width: fit-content; max-width: 95%; margin: 18px auto 25px;
+            padding: 7px; background: #111827; border: 1px solid #334155; border-radius: 50px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+        }
+        .menu a {
+            text-decoration: none; color: #cbd5e1; padding: 10px 16px;
+            border-radius: 30px; font-weight: 600; font-size: 14px; transition: 0.2s;
+        }
+        .menu a:hover { background: #1e293b; color: white; }
+        .menu .active { background: #059669; color: white; box-shadow: 0 5px 15px rgba(5,150,105,0.35); }
+        .container { width: min(1150px, 94%); margin: 0 auto 50px; }
+        .page-title { text-align: center; margin: 22px 0; }
+        .page-title h2 { color: #34d399; font-size: 30px; margin-bottom: 8px; }
+        .page-title p { color: #94a3b8; }
+        .card {
+            background: #111827; border: 1px solid #334155; border-radius: 16px;
+            padding: 24px; box-shadow: 0 12px 30px rgba(0,0,0,0.22);
+        }
+        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+        .full { grid-column: 1 / -1; }
+        label { display: block; margin-bottom: 7px; font-weight: bold; color: #cbd5e1; }
+        input, textarea {
+            width: 100%; border: 1px solid #475569; border-radius: 9px; padding: 11px 12px;
+            background: #0f172a; color: #f8fafc; outline: none; font-size: 14px;
+        }
+        input:focus, textarea:focus { border-color: #34d399; }
+        textarea { min-height: 205px; resize: vertical; font-family: Consolas, monospace; }
+        .help { color: #94a3b8; font-size: 12px; margin-top: 6px; line-height: 1.5; }
+        button {
+            width: 100%; border: none; border-radius: 10px; padding: 13px 16px;
+            font-size: 16px; font-weight: bold; cursor: pointer; color: white;
+            background: #059669; transition: 0.2s;
+        }
+        button:hover { background: #047857; transform: translateY(-1px); }
+        .result { margin-top: 20px; border-radius: 12px; padding: 18px; display: none; }
+        .accepted { background: #052e16; border: 1px solid #22c55e; }
+        .rejected { background: #450a0a; border: 1px solid #ef4444; }
+        .error { background: #451a03; border: 1px solid #f97316; }
+        .result-title { font-size: 21px; font-weight: bold; margin-bottom: 12px; }
+        .tape-viewer {
+            margin: 18px 0; padding: 18px; background: #020617;
+            border: 1px solid #334155; border-radius: 12px; text-align: center;
+        }
+        .tape-controls { display: flex; justify-content: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+        .tape-controls button { width: auto; padding: 8px 15px; font-size: 13px; background: #1e293b; border: 1px solid #475569; }
+        .tape-controls button:hover { background: #334155; }
+        .tape-strip { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin: 12px 0; }
+        .tape-cell {
+            width: 44px; height: 48px; border: 2px solid #475569; border-radius: 8px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-family: Consolas, monospace; background: #0f172a;
+        }
+        .tape-cell.head {
+            border-color: #facc15; background: #422006; box-shadow: 0 0 12px rgba(250,204,21,0.4);
+        }
+        .tape-cell .sym { font-size: 18px; font-weight: bold; color: #f8fafc; }
+        .tape-cell .idx { font-size: 10px; color: #94a3b8; }
+        .step-row {
+            padding: 9px 12px; background: #020617; border: 1px solid #1e293b;
+            border-radius: 8px; margin-top: 6px; font-family: Consolas, monospace; font-size: 13px;
+            cursor: pointer;
+        }
+        .step-row.active { border-color: #facc15; background: rgba(250,204,21,0.1); }
+        footer { text-align: center; padding: 25px; color: #64748b; border-top: 1px solid #1e293b; }
+        @media (max-width: 750px) { .form-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<header>
+    <h1>🤖 AI-TOC Simulator</h1>
+    <p>Theory of Computation Learning Platform</p>
+</header>
+<nav class="menu">
+    <a href="index.html">🏠 Home</a>
+    <a href="dfa.html">🔵 DFA</a>
+    <a href="nfa.html">🟣 NFA</a>
+    <a href="enfa.html">🟠 ε-NFA</a>
+    <a href="conversions.html">🔄 Conversions</a>
+    <a href="pda.html">📚 PDA</a>
+    <a href="tm.html" class="active">🎞️ Turing Machine</a>
+    <a href="ai-assistant.html">✨ AI Studio</a>
+</nav>
+<main class="container">
+    <section class="page-title">
+        <h2>🎞️ Turing Machine Simulator</h2>
+        <p>Single-tape read/write execution with interactive tape head stepping (Default: Binary Incrementer)</p>
+    </section>
+
+    <section class="card">
+        <div class="form-grid">
+            <div>
+                <label for="states">States (Q)</label>
+                <input id="states" type="text" value="q0,q1,q_accept">
+            </div>
+            <div>
+                <label for="inputAlphabet">Input Alphabet (Σ)</label>
+                <input id="inputAlphabet" type="text" value="0,1">
+            </div>
+            <div>
+                <label for="tapeAlphabet">Tape Alphabet (Γ)</label>
+                <input id="tapeAlphabet" type="text" value="0,1,_">
+            </div>
+            <div>
+                <label for="blankSymbol">Blank Symbol (B)</label>
+                <input id="blankSymbol" type="text" value="_">
+            </div>
+            <div>
+                <label for="startState">Start State (q₀)</label>
+                <input id="startState" type="text" value="q0">
+            </div>
+            <div>
+                <label for="acceptStates">Accept States (F)</label>
+                <input id="acceptStates" type="text" value="q_accept">
+            </div>
+            <div class="full">
+                <label for="transitions">Transition Function δ(state, read) → (next_state, write, move)</label>
+                <textarea id="transitions">q0,0 -> q0,0,R
+q0,1 -> q0,1,R
+q0,_ -> q1,_,L
+q1,1 -> q1,0,L
+q1,0 -> q_accept,1,S
+q1,_ -> q_accept,1,S</textarea>
+                <p class="help">Format per line: <strong>state,read_symbol -&gt; next_state,write_symbol,direction</strong> where direction is <strong>L</strong> (Left), <strong>R</strong> (Right), or <strong>S</strong> (Stay).</p>
+            </div>
+            <div class="full">
+                <label for="inputString">Initial Tape Input</label>
+                <input id="inputString" type="text" value="1011">
+            </div>
+            <div class="full">
+                <button onclick="simulateTM()">▶ Run Turing Machine</button>
+            </div>
+        </div>
+        <div id="result" class="result"></div>
+    </section>
+</main>
+<footer>AI-TOC Simulator — Turing Machine Module</footer>
+
+<script>
+const BACKEND_URL =
+    (window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost")
+        ? "http://127.0.0.1:8000"
+        : "/api";
+
+const parseList = v => v.split(",").map(x => x.trim()).filter(Boolean);
+const esc = v => String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+let tmTrace = [];
+let tmStepIdx = 0;
+
+async function simulateTM() {
+    const resBox = document.getElementById("result");
+    resBox.style.display = "block";
+    resBox.className = "result";
+    resBox.innerHTML = "⏳ Executing Turing Machine...";
+
+    try {
+        const states = parseList(document.getElementById("states").value);
+        const input_alphabet = parseList(document.getElementById("inputAlphabet").value);
+        const tape_alphabet = parseList(document.getElementById("tapeAlphabet").value);
+        const blank_symbol = document.getElementById("blankSymbol").value.trim() || "_";
+        const start_state = document.getElementById("startState").value.trim();
+        const accept_states = parseList(document.getElementById("acceptStates").value);
+        const input = document.getElementById("inputString").value.trim();
+
+        const transitions = {};
+        const lines = document.getElementById("transitions").value.split("\n").map(l => l.trim()).filter(Boolean);
+        for (const line of lines) {
+            const sides = line.split("->").map(s => s.trim());
+            if (sides.length !== 2) throw new Error(`Invalid transition "${line}". Use: state,read -> next,write,move`);
+            const lhs = sides[0].split(",").map(s => s.trim());
+            const rhs = sides[1].split(",").map(s => s.trim());
+            if (lhs.length !== 2 || rhs.length !== 3) throw new Error(`Invalid format in "${line}"`);
+            const [st, readSym] = lhs;
+            const [next_state, write, move] = rhs;
+            transitions[st] ??= {};
+            transitions[st][readSym] = { next_state, write, move };
+        }
+
+        const resp = await fetch(`${BACKEND_URL}/tm/simulate`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                states, input_alphabet, tape_alphabet, blank_symbol,
+                transitions, start_state, accept_states, reject_states: [], input
+            })
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.detail || "Turing Machine execution failed.");
+
+        tmTrace = data.trace || [];
+        resBox.className = data.accepted ? "result accepted" : "result rejected";
+
+        const stepsHtml = tmTrace.map((t, i) => `
+            <div class="step-row" id="tmStep_${i}" onclick="showTmStep(${i})">
+                <strong>Step ${t.step}:</strong> State=<code>${esc(t.state)}</code> | Head=${t.head} | ${esc(t.action)}
+            </div>
+        `).join("");
+
+        resBox.innerHTML = `
+            <div class="result-title">${data.accepted ? "✅ HALTED & ACCEPTED" : "❌ REJECTED / HALTED"}</div>
+            <p><strong>Steps Taken:</strong> ${data.steps_taken ?? 0} &nbsp;|&nbsp; <strong>Final State:</strong> ${esc(data.final_state || "—")}</p>
+            ${data.reason ? `<p><strong>Note:</strong> ${esc(data.reason)}</p>` : ""}
+            <div class="tape-viewer">
+                <div class="tape-controls">
+                    <button onclick="showTmStep(0)">⏮ Start</button>
+                    <button onclick="showTmStep(tmStepIdx - 1)">◀ Prev Step</button>
+                    <button onclick="showTmStep(tmStepIdx + 1)">Next Step ▶</button>
+                    <button onclick="showTmStep(tmTrace.length - 1)">⏭ Final Tape</button>
+                </div>
+                <div id="tmCaption" style="color:#facc15;font-family:Consolas,monospace;font-size:14px;"></div>
+                <div id="tmStrip" class="tape-strip"></div>
+            </div>
+            <div><strong>Execution Trace (click any row to inspect tape):</strong>${stepsHtml}</div>
+        `;
+        showTmStep(tmTrace.length - 1);
+    } catch (err) {
+        resBox.className = "result error";
+        resBox.innerHTML = `<div class="result-title">⚠️ Error</div><p>${esc(err.message)}</p>`;
+    }
+}
+
+function showTmStep(idx) {
+    if (!tmTrace.length) return;
+    tmStepIdx = Math.max(0, Math.min(idx, tmTrace.length - 1));
+    const snap = tmTrace[tmStepIdx];
+    document.getElementById("tmCaption").textContent =
+        `Step ${snap.step}/${tmTrace.length - 1} — State: ${snap.state} | ${snap.action}`;
+    document.getElementById("tmStrip").innerHTML = snap.tape.map(c => `
+        <div class="tape-cell ${c.head ? 'head' : ''}">
+            <div class="sym">${esc(c.symbol)}</div>
+            <div class="idx">${c.head ? '▲' : c.index}</div>
+        </div>
+    `).join("");
+    tmTrace.forEach((_, i) => {
+        const el = document.getElementById(`tmStep_${i}`);
+        if (el) el.classList.toggle("active", i === tmStepIdx);
+    });
+}
+</script>
+</body>
+</html>

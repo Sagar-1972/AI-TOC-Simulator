@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOC Conversions & Minimization | AI-TOC Simulator</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #0f172a; color: #e2e8f0; }
+        header {
+            background: linear-gradient(135deg, #111827, #115e59);
+            padding: 32px 20px 20px;
+            text-align: center;
+            border-bottom: 1px solid #334155;
+        }
+        header h1 { margin: 0 0 8px; font-size: 32px; }
+        header p { margin: 0; color: #cbd5e1; }
+        .menu {
+            display: flex; justify-content: center; align-items: center; flex-wrap: wrap;
+            gap: 8px; width: fit-content; max-width: 95%; margin: 18px auto 25px;
+            padding: 7px; background: #111827; border: 1px solid #334155; border-radius: 50px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+        }
+        .menu a {
+            text-decoration: none; color: #cbd5e1; padding: 10px 16px;
+            border-radius: 30px; font-weight: 600; font-size: 14px; transition: 0.2s;
+        }
+        .menu a:hover { background: #1e293b; color: white; }
+        .menu .active { background: #0d9488; color: white; box-shadow: 0 5px 15px rgba(13,148,136,0.35); }
+        .container { width: min(1150px, 94%); margin: 0 auto 50px; }
+        .page-title { text-align: center; margin: 22px 0; }
+        .page-title h2 { color: #2dd4bf; font-size: 30px; margin-bottom: 8px; }
+        .page-title p { color: #94a3b8; }
+        .tabs {
+            display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; justify-content: center;
+        }
+        .tab-btn {
+            background: #111827; border: 1px solid #334155; color: #cbd5e1;
+            padding: 11px 18px; border-radius: 10px; font-weight: 700; cursor: pointer;
+            font-size: 14px; transition: 0.2s;
+        }
+        .tab-btn:hover { border-color: #2dd4bf; color: white; }
+        .tab-btn.active { background: #0d9488; border-color: #0d9488; color: white; }
+        .card {
+            background: #111827; border: 1px solid #334155; border-radius: 16px;
+            padding: 24px; box-shadow: 0 12px 30px rgba(0,0,0,0.22);
+        }
+        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+        .full { grid-column: 1 / -1; }
+        label { display: block; margin-bottom: 7px; font-weight: bold; color: #cbd5e1; }
+        input, textarea {
+            width: 100%; border: 1px solid #475569; border-radius: 9px; padding: 11px 12px;
+            background: #0f172a; color: #f8fafc; outline: none; font-size: 14px;
+        }
+        input:focus, textarea:focus { border-color: #2dd4bf; }
+        textarea { min-height: 175px; resize: vertical; font-family: Consolas, monospace; }
+        .help { color: #94a3b8; font-size: 12px; margin-top: 6px; line-height: 1.5; }
+        button.run-btn {
+            width: 100%; border: none; border-radius: 10px; padding: 13px 16px;
+            font-size: 16px; font-weight: bold; cursor: pointer; color: white;
+            background: #0d9488; transition: 0.2s;
+        }
+        button.run-btn:hover { background: #0f766e; transform: translateY(-1px); }
+        .output-box {
+            margin-top: 22px; background: #020617; border: 1px solid #334155;
+            border-radius: 12px; padding: 20px; display: none;
+        }
+        .output-box h3 { color: #2dd4bf; margin-top: 0; }
+        table {
+            width: 100%; border-collapse: collapse; margin: 14px 0; font-family: Consolas, monospace; font-size: 14px;
+        }
+        th, td { border: 1px solid #334155; padding: 10px; text-align: center; }
+        th { background: #134e4a; color: #f0fdfa; }
+        td { background: #0f172a; }
+        .badge {
+            display: inline-block; padding: 3px 9px; border-radius: 6px;
+            background: #134e4a; color: #5eead4; font-family: Consolas, monospace; font-size: 13px; margin: 2px;
+        }
+        .step-item {
+            padding: 9px 12px; background: #0f172a; border: 1px solid #1e293b;
+            border-radius: 8px; margin-top: 7px; font-family: Consolas, monospace; font-size: 13px;
+        }
+        .err { background: #451a03; border-color: #f97316; color: #fed7aa; }
+        footer { text-align: center; padding: 25px; color: #64748b; border-top: 1px solid #1e293b; }
+        @media (max-width: 750px) { .form-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<header>
+    <h1>🤖 AI-TOC Simulator</h1>
+    <p>Theory of Computation Learning Platform</p>
+</header>
+<nav class="menu">
+
+    <a href="index.html">🏠 Home</a>
+    <a href="dfa.html">🔵 DFA</a>
+    <a href="nfa.html">🟣 NFA</a>
+    <a href="enfa.html">🟠 ε-NFA</a>
+    <a href="conversions.html" class="active">🔄 Conversions</a>
+    <a href="pda.html">📚 PDA</a>
+    <a href="tm.html">🎞️ Turing Machine</a>
+    <a href="ai-assistant.html">✨ AI Studio</a>
+
+</nav>
+<main class="container">
+    <section class="page-title">
+        <h2>🔄 Automata Conversions & Minimization</h2>
+        <p>Transform automata across formal representations with step-by-step transition tables</p>
+    </section>
+
+    <div class="tabs">
+        <button class="tab-btn active" id="tab_nfa_dfa" onclick="selectMode('nfa_dfa')">🟣→🔵 NFA to DFA (Subset Construction)</button>
+        <button class="tab-btn" id="tab_enfa_nfa" onclick="selectMode('enfa_nfa')">🟠→🟣 ε-NFA to NFA (ε-Closure)</button>
+        <button class="tab-btn" id="tab_min_dfa" onclick="selectMode('min_dfa')">🔵✂️ DFA State Minimization</button>
+        <button class="tab-btn" id="tab_regex_enfa" onclick="selectMode('regex_enfa')">🔤→🟠 Regex to ε-NFA (Thompson)</button>
+    </div>
+
+    <section class="card">
+        <div id="automataForm" class="form-grid">
+            <div>
+                <label for="states">States</label>
+                <input id="states" type="text" value="q0,q1,q2">
+            </div>
+            <div>
+                <label for="alphabet">Alphabet</label>
+                <input id="alphabet" type="text" value="0,1">
+            </div>
+            <div>
+                <label for="startState">Start State</label>
+                <input id="startState" type="text" value="q0">
+            </div>
+            <div>
+                <label for="finalStates">Final States</label>
+                <input id="finalStates" type="text" value="q2">
+            </div>
+            <div class="full">
+                <label for="transitions">Transition Table</label>
+                <textarea id="transitions">q0,0,q0|q1
+q0,1,q0
+q1,0,
+q1,1,q2
+q2,0,
+q2,1,</textarea>
+                <p id="transHelp" class="help">Format: state,symbol,dest1|dest2 (leave destination empty if none).</p>
+            </div>
+        </div>
+
+        <div id="regexForm" class="form-grid" style="display:none;">
+            <div class="full">
+                <label for="regexInput">Regular Expression</label>
+                <input id="regexInput" type="text" value="(a|b)*abb" placeholder="Example: (a|b)*abb or (0|1)+0">
+                <p class="help">Supports union <strong>|</strong>, concatenation, Kleene star <strong>*</strong>, plus <strong>+</strong>, optional <strong>?</strong>, and parentheses <strong>( )</strong>.</p>
+            </div>
+        </div>
+
+        <div style="margin-top:16px;">
+            <button class="run-btn" onclick="runConversion()">▶ Convert & Build Transition Table</button>
+        </div>
+
+        <div id="outputBox" class="output-box"></div>
+    </section>
+</main>
+<footer>AI-TOC Simulator — Automata Conversions & Minimization Module</footer>
+
+<script>
+const BACKEND_URL =
+    (window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost")
+        ? "http://127.0.0.1:8000"
+        : "/api";
+
+let currentMode = "nfa_dfa";
+
+const PRESETS = {
+    nfa_dfa: {
+        states: "q0,q1,q2",
+        alphabet: "0,1",
+        start: "q0",
+        final: "q2",
+        trans: "q0,0,q0|q1
+q0,1,q0
+q1,0,
+q1,1,q2
+q2,0,
+q2,1,",
+        help: "NFA transitions: state,symbol,dest1|dest2 (leave empty if none)."
+    },
+    enfa_nfa: {
+        states: "q0,q1,q2,q3",
+        alphabet: "0,1",
+        start: "q0",
+        final: "q3",
+        trans: "q0,ε,q1
+q0,0,
+q0,1,
+q1,ε,
+q1,0,q2
+q1,1,
+q2,ε,
+q2,0,
+q2,1,q3
+q3,ε,
+q3,0,
+q3,1,",
+        help: "ε-NFA transitions: use ε or e for epsilon transitions."
+    },
+    min_dfa: {
+        states: "A,B,C,D,E",
+        alphabet: "0,1",
+        start: "A",
+        final: "E",
+        trans: "A,0,B
+A,1,C
+B,0,B
+B,1,D
+C,0,B
+C,1,C
+D,0,B
+D,1,E
+E,0,B
+E,1,C",
+        help: "Complete DFA transitions: every state needs one destination per alphabet symbol."
+    }
+};
+
+function selectMode(mode) {
+    currentMode = mode;
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.getElementById("tab_" + mode).classList.add("active");
+    document.getElementById("outputBox").style.display = "none";
+
+    if (mode === "regex_enfa") {
+        document.getElementById("automataForm").style.display = "none";
+        document.getElementById("regexForm").style.display = "grid";
+    } else {
+        document.getElementById("automataForm").style.display = "grid";
+        document.getElementById("regexForm").style.display = "none";
+        const p = PRESETS[mode];
+        document.getElementById("states").value = p.states;
+        document.getElementById("alphabet").value = p.alphabet;
+        document.getElementById("startState").value = p.start;
+        document.getElementById("finalStates").value = p.final;
+        document.getElementById("transitions").value = p.trans;
+        document.getElementById("transHelp").textContent = p.help;
+    }
+}
+
+const parseList = v => v.split(",").map(x => x.trim()).filter(Boolean);
+const esc = v => String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+async function runConversion() {
+    const out = document.getElementById("outputBox");
+    out.style.display = "block";
+    out.className = "output-box";
+    out.innerHTML = "⏳ Computing conversion...";
+
+    try {
+        let endpoint = "";
+        let payload = {};
+
+        if (currentMode === "regex_enfa") {
+            endpoint = "/convert/regex-to-enfa";
+            payload = { regex: document.getElementById("regexInput").value.trim() };
+        } else {
+            const states = parseList(document.getElementById("states").value);
+            const alphabet = parseList(document.getElementById("alphabet").value);
+            const start_state = document.getElementById("startState").value.trim();
+            const final_states = parseList(document.getElementById("finalStates").value);
+            const transitions = {};
+            states.forEach(s => transitions[s] = {});
+
+            const lines = document.getElementById("transitions").value.split("\n").map(l => l.trim()).filter(Boolean);
+            for (const line of lines) {
+                const parts = line.split(",").map(x => x.trim());
+                if (parts.length !== 3) throw new Error(`Invalid transition: ${line}`);
+                const [st, rawSym, dstText] = parts;
+                const sym = (currentMode === "enfa_nfa" && rawSym.toLowerCase() === "e") ? "ε" : rawSym;
+
+                if (currentMode === "min_dfa") {
+                    transitions[st][sym] = dstText;
+                } else {
+                    const dests = dstText ? dstText.split("|").map(d => d.trim()).filter(Boolean) : [];
+                    transitions[st][sym] = (transitions[st][sym] || []).concat(dests);
+                }
+            }
+
+            if (currentMode !== "min_dfa") {
+                states.forEach(s => {
+                    alphabet.forEach(a => transitions[s][a] ??= []);
+                    if (currentMode === "enfa_nfa") transitions[s]["ε"] ??= [];
+                });
+            }
+
+            payload = { states, alphabet, transitions, start_state, final_states, input: "" };
+            endpoint = currentMode === "nfa_dfa" ? "/convert/nfa-to-dfa"
+                     : currentMode === "enfa_nfa" ? "/convert/enfa-to-nfa"
+                     : "/convert/minimize-dfa";
+        }
+
+        const resp = await fetch(`${BACKEND_URL}${endpoint}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.detail || "Conversion failed.");
+
+        renderConversionOutput(data);
+    } catch (err) {
+        out.className = "output-box err";
+        out.innerHTML = `<h3>⚠️ Error</h3><p>${esc(err.message)}</p>`;
+    }
+}
+
+function renderConversionOutput(data) {
+    const out = document.getElementById("outputBox");
+    const syms = currentMode === "regex_enfa" ? ["ε", ...data.alphabet] : data.alphabet;
+
+    let tableHtml = `<table><thead><tr><th>State</th>${syms.map(s => `<th>${esc(s)}</th>`).join("")}</tr></thead><tbody>`;
+    data.states.forEach(st => {
+        const isStart = st === data.start_state ? "→ " : "";
+        const isFinal = data.final_states.includes(st) ? " *" : "";
+        tableHtml += `<tr><td><strong>${esc(isStart + st + isFinal)}</strong></td>`;
+        syms.forEach(sym => {
+            const val = data.transitions[st]?.[sym];
+            const cell = Array.isArray(val) ? (val.length ? `{${val.join(", ")}}` : "∅") : esc(val || "—");
+            tableHtml += `<td>${esc(cell)}</td>`;
+        });
+        tableHtml += "</tr>";
+    });
+    tableHtml += "</tbody></table>";
+
+    let extraHtml = "";
+    if (data.epsilon_closures) {
+        extraHtml += `<h4>ε-Closures</h4>` + Object.entries(data.epsilon_closures).map(
+            ([q, cl]) => `<span class="badge">ε-closure(${esc(q)}) = {${cl.map(esc).join(", ")}}</span>`
+        ).join(" ");
+    }
+    if (data.unreachable_removed && data.unreachable_removed.length) {
+        extraHtml += `<p><strong>Unreachable States Removed:</strong> ${data.unreachable_removed.map(esc).join(", ")}</p>`;
+    }
+    if (data.partition_history) {
+        extraHtml += `<h4>Partition Refinement Steps</h4>` + data.partition_history.map(p =>
+            `<div class="step-item"><strong>Round ${p.iteration}:</strong> ${p.groups.map(g => `{${g.join(", ")}}`).join(" | ")} — <em>${esc(p.note)}</em></div>`
+        ).join("");
+    }
+    if (data.steps && Array.isArray(data.steps)) {
+        extraHtml += `<h4>Construction Steps</h4>` + data.steps.map((s, idx) => {
+            if (typeof s === "string") return `<div class="step-item">${idx + 1}. ${esc(s)}</div>`;
+            if (s.from_subset) return `<div class="step-item">δ(${esc(s.from_subset)}, ${esc(s.symbol)}) = <strong>${esc(s.to_subset)}</strong></div>`;
+            return `<div class="step-item">State ${esc(s.state)}, symbol '${esc(s.symbol)}': ε-closure(${esc(s.state)})=[${s.epsilon_closure.join(",")}] → move=[${s.move_targets.join(",")}] → <strong>[${s.result_states.join(",")}]</strong></div>`;
+        }).join("");
+    }
+
+    out.innerHTML = `
+        <h3>✅ Conversion Complete</h3>
+        <p><strong>Resulting States (Q):</strong> ${data.states.map(esc).join(", ")}</p>
+        <p><strong>Start State (q₀):</strong> ${esc(data.start_state)} &nbsp;|&nbsp; <strong>Final States (F):</strong> ${data.final_states.map(esc).join(", ") || "∅"}</p>
+        ${tableHtml}
+        ${extraHtml}
+    `;
+}
+</script>
+</body>
+</html>
