@@ -110,6 +110,49 @@
             transition: 0.2s;
         }
         button.run-btn:hover { background: #0f766e; transform: translateY(-1px); }
+
+        /* =========================
+           SOURCE (BEFORE CONVERSION)
+           STATE DIAGRAM CARD
+        ========================= */
+        .source-diagram-card {
+            margin-top: 22px;
+        }
+        .source-diagram-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .source-diagram-header h3 {
+            margin: 0;
+            font-size: 19px;
+        }
+        .preview-btn {
+            border: 1px solid #475569;
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: 8px;
+            padding: 7px 14px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .preview-btn:hover { background: #334155; }
+        .source-error {
+            display: none;
+            background: #451a03;
+            border: 1px solid #f97316;
+            color: #fed7aa;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+
         .output-box {
             margin-top: 22px;
             background: #020617;
@@ -151,8 +194,8 @@
         .err { background: #451a03; border-color: #f97316; color: #fed7aa; }
 
         /* =========================
+           CONVERTED (AFTER)
            INTERACTIVE DIAGRAM CARD
-           (Matches DFA / NFA / ε-NFA)
         ========================= */
         .diagram-card {
             margin-top: 22px;
@@ -269,7 +312,7 @@
         }
         .diagram {
             width: 100%;
-            min-height: 430px;
+            min-height: 410px;
             background: #020617;
             border: 1px solid #334155;
             border-radius: 12px;
@@ -280,7 +323,7 @@
             display: block;
             width: 100%;
             min-width: 760px;
-            height: 400px;
+            height: 390px;
         }
         .legend {
             display: flex;
@@ -331,7 +374,7 @@
 <main class="container">
     <section class="page-title">
         <h2>🔄 Automata Conversions & Minimization</h2>
-        <p>Convert between ε-NFA, NFA, and DFA or minimize DFA states — then test & step through the resulting state diagram</p>
+        <p>Inspect the input automaton state diagram before conversion, then convert and step through the resulting automaton</p>
     </section>
 
     <div class="tabs">
@@ -345,23 +388,23 @@
         <div class="form-grid">
             <div>
                 <label for="states">States</label>
-                <input id="states" type="text" value="q0,q1,q2">
+                <input id="states" type="text" value="q0,q1,q2" oninput="refreshSourceDiagram()">
             </div>
             <div>
                 <label for="alphabet">Alphabet</label>
-                <input id="alphabet" type="text" value="0,1">
+                <input id="alphabet" type="text" value="0,1" oninput="refreshSourceDiagram()">
             </div>
             <div>
                 <label for="startState">Start State</label>
-                <input id="startState" type="text" value="q0">
+                <input id="startState" type="text" value="q0" oninput="refreshSourceDiagram()">
             </div>
             <div>
                 <label for="finalStates">Final States</label>
-                <input id="finalStates" type="text" value="q2">
+                <input id="finalStates" type="text" value="q2" oninput="refreshSourceDiagram()">
             </div>
             <div class="full">
                 <label for="transitions">Transition Table</label>
-                <textarea id="transitions">q0,0,q0|q1
+                <textarea id="transitions" oninput="refreshSourceDiagram()">q0,0,q0|q1
 q0,1,q0
 q1,0,
 q1,1,q2
@@ -379,12 +422,30 @@ q2,1,</textarea>
     </section>
 
     <!-- =========================
+         SOURCE (BEFORE CONVERSION)
+         TRANSITION STATE DIAGRAM
+    ========================= -->
+    <section id="sourceDiagramCard" class="card source-diagram-card">
+        <div class="source-diagram-header">
+            <h3 id="sourceDiagramTitle" style="color:#a78bfa;">🟣 Input NFA Transition State Diagram (Before Conversion)</h3>
+            <button class="preview-btn" onclick="refreshSourceDiagram()">🔄 Refresh Input Diagram</button>
+        </div>
+        <div id="sourceError" class="source-error"></div>
+        <div id="sourceDiagram" class="diagram"></div>
+        <div class="legend">
+            <span><i id="srcDotStart" class="dot start" style="background:#a78bfa;border-color:#a78bfa;"></i> Start state</span>
+            <span><i class="dot final"></i> Final state</span>
+            <span><i id="srcDotNormal" class="dot" style="border-color:#a78bfa;"></i> Normal state</span>
+        </div>
+    </section>
+
+    <!-- =========================
+         CONVERTED (AFTER)
          INTERACTIVE STATE DIAGRAM
-         (Matches DFA / NFA / ε-NFA)
     ========================= -->
     <section id="diagramCard" class="card diagram-card">
         <div class="diagram-header">
-            <h3 id="diagramTitle">🔄 Converted Interactive State Diagram</h3>
+            <h3 id="diagramTitle">🔵 Resulting DFA Interactive State Diagram (After Conversion)</h3>
             <div class="step-controls">
                 <span id="stepIndicator" class="step-badge">Step: Ready</span>
                 <button class="secondary" onclick="prevStep()">◀ Prev</button>
@@ -422,7 +483,7 @@ const BACKEND_URL =
 let currentMode = "nfa_dfa";
 
 let convState = {
-    resultType: "dfa", // "dfa" or "nfa"
+    resultType: "dfa",
     states: [],
     alphabet: [],
     transitions: {},
@@ -440,6 +501,8 @@ const PRESETS = {
         start: "q0",
         final: "q2",
         sampleInput: "01",
+        srcTitle: "🟣 Input NFA Transition State Diagram (Before Conversion)",
+        srcAccent: "#a78bfa",
         trans: "q0,0,q0|q1\nq0,1,q0\nq1,0,\nq1,1,q2\nq2,0,\nq2,1,",
         help: "NFA transitions: state,symbol,dest1|dest2 (leave destination empty if none)."
     },
@@ -449,6 +512,8 @@ const PRESETS = {
         start: "q0",
         final: "q3",
         sampleInput: "01",
+        srcTitle: "🟠 Input ε-NFA Transition State Diagram (Before Conversion)",
+        srcAccent: "#fb923c",
         trans: "q0,ε,q1\nq0,0,\nq0,1,\nq1,ε,\nq1,0,q2\nq1,1,\nq2,ε,\nq2,0,\nq2,1,q3\nq3,ε,\nq3,0,\nq3,1,",
         help: "ε-NFA transitions: use ε or e for epsilon transitions (e.g., q0,ε,q1)."
     },
@@ -458,6 +523,8 @@ const PRESETS = {
         start: "q0",
         final: "q2",
         sampleInput: "ab",
+        srcTitle: "🟠 Input ε-NFA Transition State Diagram (Before Conversion)",
+        srcAccent: "#fb923c",
         trans: "q0,ε,q1\nq0,a,q0\nq0,b,\nq1,ε,q2\nq1,a,\nq1,b,q1\nq2,ε,\nq2,a,q2\nq2,b,q2",
         help: "ε-NFA transitions: use ε or e for epsilon transitions. Converts directly to DFA using ε-closure."
     },
@@ -467,6 +534,8 @@ const PRESETS = {
         start: "A",
         final: "E",
         sampleInput: "011",
+        srcTitle: "🔵 Input Unminimized DFA Transition State Diagram (Before Minimization)",
+        srcAccent: "#60a5fa",
         trans: "A,0,B\nA,1,C\nB,0,B\nB,1,D\nC,0,B\nC,1,C\nD,0,B\nD,1,E\nE,0,B\nE,1,C",
         help: "Complete DFA transitions: every state needs one destination per alphabet symbol."
     }
@@ -488,58 +557,77 @@ function selectMode(mode) {
     document.getElementById("transitions").value = p.trans;
     document.getElementById("transHelp").textContent = p.help;
     document.getElementById("testInput").value = p.sampleInput;
+
+    refreshSourceDiagram();
 }
 
 const parseList = v => v.split(",").map(x => x.trim()).filter(Boolean);
 const esc = v => String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 
-async function runConversion() {
-    stopAutoPlay();
-    const out = document.getElementById("outputBox");
-    out.style.display = "block";
-    out.className = "output-box";
-    out.innerHTML = "⏳ Computing conversion...";
+function parseSourceInput(strictMode = true) {
+    const states = parseList(document.getElementById("states").value);
+    const alphabet = parseList(document.getElementById("alphabet").value);
+    const start_state = document.getElementById("startState").value.trim();
+    const final_states = parseList(document.getElementById("finalStates").value);
 
-    try {
-        const states = parseList(document.getElementById("states").value);
-        const alphabet = parseList(document.getElementById("alphabet").value);
-        const start_state = document.getElementById("startState").value.trim();
-        const final_states = parseList(document.getElementById("finalStates").value);
+    if (!states.length) throw new Error("Please enter at least one state.");
+    if (!alphabet.length) throw new Error("Please enter at least one alphabet symbol.");
+    if (!start_state || !states.includes(start_state)) throw new Error(`Start state "${start_state}" must belong to states.`);
+    if (strictMode && !final_states.length) throw new Error("Please enter at least one final state.");
 
-        if (!states.length) throw new Error("Please enter at least one state.");
-        if (!alphabet.length) throw new Error("Please enter at least one alphabet symbol.");
-        if (!start_state || !states.includes(start_state)) throw new Error(`Start state "${start_state}" must belong to states.`);
-        if (!final_states.length) throw new Error("Please enter at least one final state.");
+    const transitions = {};
+    states.forEach(s => transitions[s] = {});
 
-        const transitions = {};
-        states.forEach(s => transitions[s] = {});
+    const isEnfaMode = (currentMode === "enfa_nfa" || currentMode === "enfa_dfa");
+    const lines = document.getElementById("transitions").value.split("\n").map(l => l.trim()).filter(Boolean);
 
-        const isEnfaMode = (currentMode === "enfa_nfa" || currentMode === "enfa_dfa");
-        const lines = document.getElementById("transitions").value.split("\n").map(l => l.trim()).filter(Boolean);
-
-        for (const line of lines) {
-            const parts = line.split(",").map(x => x.trim());
-            if (parts.length !== 3) throw new Error(`Invalid transition "${line}". Use state,symbol,destination.`);
-            const [st, rawSym, dstText] = parts;
-            if (!states.includes(st)) throw new Error(`Unknown state "${st}".`);
-
-            const sym = (isEnfaMode && rawSym.toLowerCase() === "e") ? "ε" : rawSym;
-            if (sym !== "ε" && !alphabet.includes(sym)) throw new Error(`Unknown alphabet symbol "${sym}".`);
-            if (!isEnfaMode && sym === "ε") throw new Error("ε transitions are only allowed in ε-NFA modes.");
-
-            if (currentMode === "min_dfa") {
-                if (!dstText || dstText.includes("|")) throw new Error(`DFA transition δ(${st}, ${sym}) must have one destination.`);
-                if (!states.includes(dstText)) throw new Error(`Unknown destination "${dstText}".`);
-                transitions[st][sym] = dstText;
-            } else {
-                const dests = dstText ? dstText.split("|").map(d => d.trim()).filter(Boolean) : [];
-                for (const d of dests) {
-                    if (!states.includes(d)) throw new Error(`Unknown destination "${d}".`);
-                }
-                transitions[st][sym] = (transitions[st][sym] || []).concat(dests);
-            }
+    for (const line of lines) {
+        const parts = line.split(",").map(x => x.trim());
+        if (parts.length !== 3) {
+            if (strictMode) throw new Error(`Invalid transition "${line}". Use state,symbol,destination.`);
+            continue;
+        }
+        const [st, rawSym, dstText] = parts;
+        if (!states.includes(st)) {
+            if (strictMode) throw new Error(`Unknown state "${st}".`);
+            continue;
         }
 
+        const sym = (isEnfaMode && rawSym.toLowerCase() === "e") ? "ε" : rawSym;
+        if (sym !== "ε" && !alphabet.includes(sym)) {
+            if (strictMode) throw new Error(`Unknown alphabet symbol "${sym}".`);
+            continue;
+        }
+        if (!isEnfaMode && sym === "ε") {
+            if (strictMode) throw new Error("ε transitions are only allowed in ε-NFA modes.");
+            continue;
+        }
+
+        if (currentMode === "min_dfa") {
+            if (!dstText || dstText.includes("|")) {
+                if (strictMode) throw new Error(`DFA transition δ(${st}, ${sym}) must have one destination.`);
+                continue;
+            }
+            if (!states.includes(dstText)) {
+                if (strictMode) throw new Error(`Unknown destination "${dstText}".`);
+                continue;
+            }
+            transitions[st][sym] = dstText;
+        } else {
+            const dests = dstText ? dstText.split("|").map(d => d.trim()).filter(Boolean) : [];
+            const validDests = [];
+            for (const d of dests) {
+                if (!states.includes(d)) {
+                    if (strictMode) throw new Error(`Unknown destination "${d}".`);
+                } else {
+                    validDests.push(d);
+                }
+            }
+            transitions[st][sym] = (transitions[st][sym] || []).concat(validDests);
+        }
+    }
+
+    if (strictMode) {
         if (currentMode === "min_dfa") {
             states.forEach(s => alphabet.forEach(a => {
                 if (!(a in transitions[s])) throw new Error(`Missing transition: δ(${s}, ${a})`);
@@ -550,8 +638,53 @@ async function runConversion() {
                 if (isEnfaMode) transitions[s]["ε"] ??= [];
             });
         }
+    }
 
-        const payload = { states, alphabet, transitions, start_state, final_states, input: "" };
+    return { states, alphabet, transitions, start_state, final_states };
+}
+
+function refreshSourceDiagram() {
+    const p = PRESETS[currentMode];
+    const titleEl = document.getElementById("sourceDiagramTitle");
+    const errEl = document.getElementById("sourceError");
+    titleEl.textContent = p.srcTitle;
+    titleEl.style.color = p.srcAccent;
+    document.getElementById("srcDotStart").style.background = p.srcAccent;
+    document.getElementById("srcDotStart").style.borderColor = p.srcAccent;
+    document.getElementById("srcDotNormal").style.borderColor = p.srcAccent;
+
+    try {
+        const parsed = parseSourceInput(false);
+        errEl.style.display = "none";
+        drawGraph(
+            "sourceDiagram",
+            parsed.states,
+            parsed.transitions,
+            parsed.start_state,
+            parsed.final_states,
+            [],
+            [],
+            "",
+            p.srcAccent
+        );
+    } catch (err) {
+        errEl.style.display = "block";
+        errEl.textContent = "Preview note: " + err.message;
+    }
+}
+
+async function runConversion() {
+    stopAutoPlay();
+    refreshSourceDiagram();
+
+    const out = document.getElementById("outputBox");
+    out.style.display = "block";
+    out.className = "output-box";
+    out.innerHTML = "⏳ Computing conversion...";
+
+    try {
+        const parsed = parseSourceInput(true);
+        const payload = { ...parsed, input: "" };
         const endpoint = currentMode === "nfa_dfa" ? "/convert/nfa-to-dfa"
                        : currentMode === "enfa_nfa" ? "/convert/enfa-to-nfa"
                        : currentMode === "enfa_dfa" ? "/convert/enfa-to-dfa"
@@ -579,16 +712,26 @@ async function runConversion() {
         const diagCard = document.getElementById("diagramCard");
         diagCard.style.display = "block";
         const titles = {
-            nfa_dfa: "🔵 Resulting DFA Interactive State Diagram",
-            enfa_nfa: "🟣 Resulting NFA Interactive State Diagram",
-            enfa_dfa: "🔵 Resulting DFA Interactive State Diagram",
-            min_dfa: "🔵 Minimized DFA Interactive State Diagram"
+            nfa_dfa: "🔵 Resulting DFA Interactive State Diagram (After Conversion)",
+            enfa_nfa: "🟣 Resulting NFA Interactive State Diagram (After Conversion)",
+            enfa_dfa: "🔵 Resulting DFA Interactive State Diagram (After Conversion)",
+            min_dfa: "🔵 Minimized DFA Interactive State Diagram (After Minimization)"
         };
         document.getElementById("diagramTitle").textContent = titles[currentMode];
         document.getElementById("stepIndicator").textContent = "Step: Ready";
         document.getElementById("simStatus").style.display = "none";
 
-        drawGraph(convState.states, convState.transitions, convState.startState, convState.finalStates, [convState.startState], [], "");
+        drawGraph(
+            "diagram",
+            convState.states,
+            convState.transitions,
+            convState.startState,
+            convState.finalStates,
+            [convState.startState],
+            [],
+            "",
+            "#2dd4bf"
+        );
     } catch (err) {
         out.className = "output-box err";
         out.innerHTML = `<h3>⚠️ Error</h3><p>${esc(err.message)}</p>`;
@@ -731,13 +874,15 @@ function goToStep(idx) {
     });
 
     drawGraph(
+        "diagram",
         convState.states,
         convState.transitions,
         convState.startState,
         convState.finalStates,
         snap.activeStates,
         snap.prevStates,
-        snap.symbol
+        snap.symbol,
+        "#2dd4bf"
     );
 }
 
@@ -783,7 +928,8 @@ function stopAutoPlay() {
 }
 
 /* =========================
-   INTERACTIVE SVG DIAGRAM
+   REUSABLE SVG DIAGRAM
+   (Supports Before & After)
 ========================= */
 
 function createSVG(tag, attrs = {}) {
@@ -814,13 +960,16 @@ function calculatePositions(states) {
     return pos;
 }
 
-function drawGraph(states, transitions, startState, finalStates, activeStates = [], prevStates = [], activeSymbol = "") {
-    const container = document.getElementById("diagram");
+function drawGraph(containerId, states, transitions, startState, finalStates, activeStates = [], prevStates = [], activeSymbol = "", accentColor = "#2dd4bf") {
+    const container = document.getElementById(containerId);
     container.innerHTML = "";
     const svg = createSVG("svg", { viewBox: "0 0 1000 400", role: "img" });
 
+    const defaultMarkerId = `${containerId}_arrowDefault`;
+    const activeMarkerId = `${containerId}_arrowActive`;
+
     const defs = createSVG("defs");
-    [["convArrowDefault", "#94a3b8"], ["convArrowActive", "#facc15"]].forEach(([id, color]) => {
+    [[defaultMarkerId, "#94a3b8"], [activeMarkerId, "#facc15"]].forEach(([id, color]) => {
         const m = createSVG("marker", {
             id, markerWidth: "10", markerHeight: "10", refX: "9", refY: "3",
             orient: "auto", markerUnits: "strokeWidth"
@@ -852,16 +1001,26 @@ function drawGraph(states, transitions, startState, finalStates, activeStates = 
             edge.symbols.includes(activeSymbol);
 
         const reverseExists = edge.from !== edge.to && Boolean(grouped[`${edge.to}__${edge.from}`]);
-        drawEdge(svg, positions[edge.from], positions[edge.to], edge.symbols.join(","), edge.from === edge.to, reverseExists, isEdgeActive);
+        drawEdge(
+            svg,
+            positions[edge.from],
+            positions[edge.to],
+            edge.symbols.join(","),
+            edge.from === edge.to,
+            reverseExists,
+            isEdgeActive,
+            defaultMarkerId,
+            activeMarkerId
+        );
     });
 
     if (positions[startState]) {
         const p = positions[startState];
         svg.appendChild(createSVG("line", {
             x1: p.x - 75, y1: p.y, x2: p.x - 42, y2: p.y,
-            stroke: "#2dd4bf", "stroke-width": "2.5", "marker-end": "url(#convArrowDefault)"
+            stroke: accentColor, "stroke-width": "2.5", "marker-end": `url(#${defaultMarkerId})`
         }));
-        addText(svg, "start", p.x - 74, p.y - 10, { fill: "#2dd4bf", "font-size": "13", "text-anchor": "middle" });
+        addText(svg, "start", p.x - 74, p.y - 10, { fill: accentColor, "font-size": "13", "text-anchor": "middle" });
     }
 
     states.forEach(st => {
@@ -870,7 +1029,7 @@ function drawGraph(states, transitions, startState, finalStates, activeStates = 
         const isFinal = finalStates.includes(st);
         const isActive = activeStates.includes(st);
 
-        const strokeColor = isActive ? "#facc15" : (isFinal ? "#22c55e" : "#2dd4bf");
+        const strokeColor = isActive ? "#facc15" : (isFinal ? "#22c55e" : accentColor);
         const fillColor = isActive ? "#422006" : "#0f172a";
 
         svg.appendChild(createSVG("circle", {
@@ -900,10 +1059,10 @@ function drawGraph(states, transitions, startState, finalStates, activeStates = 
     container.appendChild(svg);
 }
 
-function drawEdge(svg, from, to, label, selfLoop, hasReverse, isActive) {
+function drawEdge(svg, from, to, label, selfLoop, hasReverse, isActive, defaultMarkerId, activeMarkerId) {
     const stroke = isActive ? "#facc15" : "#94a3b8";
     const width = isActive ? "3.5" : "2";
-    const marker = isActive ? "url(#convArrowActive)" : "url(#convArrowDefault)";
+    const marker = isActive ? `url(#${activeMarkerId})` : `url(#${defaultMarkerId})`;
     const textFill = isActive ? "#facc15" : "#f8fafc";
 
     if (selfLoop) {
@@ -946,6 +1105,10 @@ function drawEdge(svg, from, to, label, selfLoop, hasReverse, isActive) {
         fill: textFill, "font-size": "14", "font-weight": "bold", "text-anchor": "middle"
     });
 }
+
+window.addEventListener("load", () => {
+    refreshSourceDiagram();
+});
 </script>
 </body>
 </html>
